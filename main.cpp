@@ -4,8 +4,7 @@
 // Final Project
 #include <math.h>
 #include <iostream>
-#include "particle.h"
-#include "mathLib2D.h"
+#include "Paintball.h"
 #include <vector>
 #include <string>
 
@@ -29,18 +28,20 @@ using namespace std;
 #endif
 
 //global variables
-
-vector<Particle> particles;
+std::vector<Paintball> paintBallVec(0);
+bool shot = false;
 
 // One light for now
 GLfloat lightPos[1][4] = {
     { 5, 25, 5, 1 },
 };
 
+//camera position
+float eye[3] = {0, 20, 50};
+
 //some basic lighting characteristics
 float amb[4] = {0,0,0,0};
 float spec[4] = {1,1,1,1};
-float eye[3] = {0, 5, 50};
 float diff[4] = {.7,.7,.7,1};
 
 //Floor map coordinates
@@ -117,9 +118,26 @@ void drawAxis() {
 }
 
 void shootPaintBall(){
+    Paintball P;
+    paintBallVec.push_back(P);
+    glPushMatrix();
+        glColor3f(0,0,0);
+        glTranslatef(0, 20, 40);
+        glutSolidSphere(2, 10, 10);
+    glPopMatrix();
 
 }
     
+void drawPaintBalls(){
+    for(int i = 0; i < 2; i++){
+        glPushMatrix();
+            glColor3f(0,0,0);
+            //glTranslatef(0, 20, 40);
+            glutSolidSphere(2, 10, 10);
+        glPopMatrix();
+    }
+}
+
 //this function is used to move particle objects
 //including bouncing and speed
 void moveDirection(){
@@ -130,19 +148,10 @@ void moveDirection(){
 //this function displays output to the window
 void display(void) {
 
-    // call global variables
-    //::reset;
-    //::count;
-
-    //call glut functions
-    //glMatrixMode(GL_PROJECTION);
-    //glLoadIdentity();
-    //gluPerspective(45, 1, 1, 500);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    //gluLookAt(eye[0], eye[1], eye[2], 0, 0, 0, 0, 1, 0);
-    gluLookAt(0,20,50, 0,10,0, 0,1,0);
+    gluLookAt(eye[0],eye[1],eye[2], 0,10,0, 0,1,0);
 
     //if initial run of program
     //print instructions and reset particles
@@ -156,12 +165,12 @@ void display(void) {
     //}
 
     // LIGHTING, SET CHANNELS 
-    for (unsigned int i = 0; i < 2; i++) {
-        glLightfv(GL_LIGHT0 + i, GL_POSITION, lightPos[i]);
-        glLightfv(GL_LIGHT0 +i,GL_AMBIENT, amb);
-        glLightfv(GL_LIGHT0 +i,GL_DIFFUSE, diff);
-        glLightfv(GL_LIGHT0 +i,GL_SPECULAR,spec);
-    }
+    // for (unsigned int i = 0; i < 2; i++) {
+    //     glLightfv(GL_LIGHT0 + i, GL_POSITION, lightPos[i]);
+    //     glLightfv(GL_LIGHT0 +i,GL_AMBIENT, amb);
+    //     glLightfv(GL_LIGHT0 +i,GL_DIFFUSE, diff);
+    //     glLightfv(GL_LIGHT0 +i,GL_SPECULAR,spec);
+    // }
 
     drawAxis();
 
@@ -170,6 +179,9 @@ void display(void) {
 
     wall();
 
+    if (shot == true) {
+        drawPaintBalls();
+    }
     //count++;
 
     //switch our buffers for a smooth animation
@@ -213,6 +225,8 @@ void handleSpecialKeyboard(int key, int _x, int _y) {
 void OnMouseClick(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
         //shoot the paintball
+        cout<<"HUHU"<<endl;
+        shot = true;
         shootPaintBall();   //pass parameters of current 'crosshair'
     }
 
@@ -236,6 +250,7 @@ int main(int argc, char** argv) {
     //glCullFace(GL_BACK);
     //glShadeModel(GL_SMOOTH);
     projection();
+    glutMouseFunc(OnMouseClick);
     glutKeyboardFunc(handleKeyboard);
     glutSpecialFunc(handleSpecialKeyboard);
     glutDisplayFunc(display);
