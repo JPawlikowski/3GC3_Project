@@ -32,7 +32,7 @@ PROGRAM_NAME=a3
 # 	./$(PROGRAM_NAME)$(EXEEXT)
 
 run :
-	$(CC) -o mainProj Paintball.cpp Splatter.cpp main.cpp $(CFLAGS) $(LDFLAGS) -Wno-deprecated
+	$(CC) -LC:/MinGW/include -o mainProj Paintball.cpp Splatter.cpp main.cpp $(CFLAGS) $(LDFLAGS) -Wno-deprecated
 	./mainProj
 
 #when adding additional source files, such as boilerplateClass.cpp
@@ -41,7 +41,7 @@ run :
 #make will automatically know that the objectfile needs to be compiled
 #form a cpp source file and find it itself :)
 $(PROGRAM_NAME): a3_main.o
-	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
+	$(CC) -LC:/MinGW/include -o $@ $^ $(CFLAGS) $(LDFLAGS)
 
 FORCE: ;
 

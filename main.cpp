@@ -98,7 +98,7 @@ void floor(){
 void wall(){
     //use variables from arrays here not raw numbers 'WALL_POS'
     glBegin(GL_QUADS);
-        glColor3f(1, 0, 0);
+        glColor3f(0, 1, 0);
         glVertex3f(-15, 0, -35);
         glVertex3f(15, 0, -35);
         glVertex3f(15, 20, -35);
@@ -124,7 +124,7 @@ void drawAxis() {
 //draw aiming point
 void drawCrossHair() {
     glBegin(GL_LINES);
-        glColor3f(0,0,0);
+        glColor3f(1,0,0);
         glVertex3f(crossHairPos[0] - 0.1, crossHairPos[1], crossHairPos[2]);
         glVertex3f(crossHairPos[0] + 0.1, crossHairPos[1], crossHairPos[2]);
         glVertex3f(crossHairPos[0], crossHairPos[1] + 0.1, crossHairPos[2]);
@@ -163,7 +163,7 @@ void shootPaintBall(){
 void drawPaintBalls(){
     for(int i = 0; i < paintBallVec.size(); i++){
         glPushMatrix();
-            glColor3f(0,0,0);
+            glColor3f(paintBallVec[i].color[0],paintBallVec[i].color[1],paintBallVec[i].color[2]);
             paintBallVec[i].mZ = paintBallVec[i].mZ - paintBallVec[i].speed;    //"-" because shooting 'down' range
             glTranslatef(paintBallVec[i].mX, paintBallVec[i].mY, paintBallVec[i].mZ);
             if (paintBallVec[i].mZ <= -35) {    //hit wall
