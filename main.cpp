@@ -147,7 +147,7 @@ void drawSplatters() {    //note: add color of paintball to this
 }
 
 //add to vector of splatters
-void wallInteraction(int i) {
+void wallInteraction(int p) {
     cout<<"hit"<<endl;
     Splatter S(paintBallVec[p].mX, paintBallVec[p].mY,paintBallVec[p].color);
     splatterVec.push_back(S);
