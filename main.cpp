@@ -98,7 +98,7 @@ void floor(){
 void wall(){
     //use variables from arrays here not raw numbers 'WALL_POS'
     glBegin(GL_QUADS);
-        glColor3f(1, 0, 0);
+        glColor3f(1, 1, 0);
         glVertex3f(-15, 0, -35);
         glVertex3f(15, 0, -35);
         glVertex3f(15, 20, -35);
@@ -124,7 +124,7 @@ void drawAxis() {
 //draw aiming point
 void drawCrossHair() {
     glBegin(GL_LINES);
-        glColor3f(0,0,0);
+        glColor3f(1,0,0);
         glVertex3f(crossHairPos[0] - 0.1, crossHairPos[1], crossHairPos[2]);
         glVertex3f(crossHairPos[0] + 0.1, crossHairPos[1], crossHairPos[2]);
         glVertex3f(crossHairPos[0], crossHairPos[1] + 0.1, crossHairPos[2]);
@@ -136,7 +136,7 @@ void drawCrossHair() {
 void drawSplatters() {    //note: add color of paintball to this
     for(int i = 0; i < splatterVec.size(); i++){
         glBegin(GL_POLYGON);
-            glColor3f(0,0,0);
+            glColor3f(splatterVec[i].color[0],splatterVec[i].color[1],splatterVec[i].color[2]);
             glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY - 2, -34);
             glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY - 2, -34);
             glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY + 2, -34);
@@ -149,14 +149,18 @@ void drawSplatters() {    //note: add color of paintball to this
 //add to vector of splatters
 void wallInteraction(int i) {
     cout<<"hit"<<endl;
+<<<<<<< HEAD
     Splatter S(paintBallVec[i].mX, paintBallVec[i].mY);
+=======
+    Splatter S(paintBallVec[p].mX, paintBallVec[p].mY,paintBallVec[p].color);
+>>>>>>> ca03e599916541e258c3a00b7a9333f9b56ff14d
     splatterVec.push_back(S);
     paintBallVec.erase(paintBallVec.begin()+i)
 }
 
 //shooting a paintball ads it to the vector
 void shootPaintBall(){
-    Paintball P(crossHairPos[0], crossHairPos[1], crossHairPos[2]);
+    Paintball P(crossHairPos[0]*10, crossHairPos[1], crossHairPos[2]);
     paintBallVec.push_back(P);
 }
 
@@ -164,7 +168,7 @@ void shootPaintBall(){
 void drawPaintBalls(){
     for(int i = 0; i < paintBallVec.size(); i++){
         glPushMatrix();
-            glColor3f(0,0,0);
+            glColor3f(paintBallVec[i].color[0],paintBallVec[i].color[1],paintBallVec[i].color[2]);
             paintBallVec[i].mZ = paintBallVec[i].mZ - paintBallVec[i].speed;    //"-" because shooting 'down' range
             glTranslatef(paintBallVec[i].mX, paintBallVec[i].mY, paintBallVec[i].mZ);
             if (paintBallVec[i].mZ <= -35) {    //hit wall
