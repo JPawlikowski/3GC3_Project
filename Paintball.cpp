@@ -18,7 +18,7 @@ Paintball::Paintball(){
     this -> color[1] = (rand() % 10) / 10.0;
     this -> color[2] = (rand() % 10) / 10.0;
     //speed, static for now
-    this -> speed = 5;
+    this -> speed = 0.5;
     
 }
 
@@ -33,6 +33,6 @@ Paintball::Paintball(float inX, float inY, float inZ){
     this -> color[1] = (rand() % 10) / 10.0;
     this -> color[2] = (rand() % 10) / 10.0;
 
-    this -> speed = 5;
+    this -> speed = 0.5;
 
 }

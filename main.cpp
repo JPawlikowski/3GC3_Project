@@ -29,7 +29,12 @@ using namespace std;
 
 //global variables
 std::vector<Paintball> paintBallVec(0);
-bool shot = false;
+//bool shot = false;
+bool reset = false;
+int cnt = 0;
+
+//crosshair coordinates
+float crossHairPos[3] = {0, 9, 47};
 
 // One light for now
 GLfloat lightPos[1][4] = {
@@ -37,7 +42,7 @@ GLfloat lightPos[1][4] = {
 };
 
 //camera position
-float eye[3] = {0, 20, 50};
+float eye[3] = {0, 10, 50};
 
 //some basic lighting characteristics
 float amb[4] = {0,0,0,0};
@@ -58,10 +63,6 @@ GLfloat materialSpecular[4] = {.5,.5,.5,1};
 GLfloat materialDiffuse[4] = {1,0,0,1};
 GLfloat materialShininess[] = {10.0};
 
-
-bool reset = false;
-int count = 0;
-
 //this function is called once at the beginning of the program to print instructions for user
 void instructions()
 {
@@ -79,10 +80,10 @@ void floor(){
     //::floorCoord;
     glBegin(GL_POLYGON);
         glColor3f(0,0.5,.5);
-        glVertex3f(-20,0,-20);
-        glVertex3f(20,0,-20);
-        glVertex3f(20,0,20);
-        glVertex3f(-20,0,20);
+        glVertex3f(-20,0,-40);
+        glVertex3f(20,0,-40);
+        glVertex3f(20,0,40);
+        glVertex3f(-20,0,40);
     glEnd();
     
 
@@ -96,13 +97,14 @@ void wall(){
     //use variables from arrays here not raw numbers 'WALL_POS'
     glBegin(GL_QUADS);
         glColor3f(1, 0, 0);
-        glVertex3f(-15, 0, -15);
-        glVertex3f(15, 0, -15);
-        glVertex3f(15, 20, -15);
-        glVertex3f(-15, 20, -15);
+        glVertex3f(-15, 0, -35);
+        glVertex3f(15, 0, -35);
+        glVertex3f(15, 20, -35);
+        glVertex3f(-15, 20, -35);
     glEnd();
 }
 
+//draw x,y,z axis, useful for perspective and testing
 void drawAxis() {
     glBegin(GL_LINES);
         glColor3f(1, 0, 0);
@@ -117,33 +119,34 @@ void drawAxis() {
     glEnd();
 }
 
-void shootPaintBall(){
-    Paintball P;
-    paintBallVec.push_back(P);
-    glPushMatrix();
+//draw aiming point
+void drawCrossHair() {
+    glBegin(GL_LINES);
         glColor3f(0,0,0);
-        glTranslatef(0, 20, 40);
-        glutSolidSphere(2, 10, 10);
-    glPopMatrix();
-
+        glVertex3f(crossHairPos[0] - 0.1, crossHairPos[1], crossHairPos[2]);
+        glVertex3f(crossHairPos[0] + 0.1, crossHairPos[1], crossHairPos[2]);
+        glVertex3f(crossHairPos[0], crossHairPos[1] + 0.1, crossHairPos[2]);
+        glVertex3f(crossHairPos[0], crossHairPos[1] - 0.1, crossHairPos[2]);
+    glEnd();
 }
-    
+
+//shooting a paintball ads it to the vector
+void shootPaintBall(){
+    Paintball P(0, 9, 47);  //these should be mouse coords
+    paintBallVec.push_back(P);
+}
+
+//increment z value of all active paintballs
 void drawPaintBalls(){
-    for(int i = 0; i < 2; i++){
+    for(int i = 0; i < paintBallVec.size(); i++){
         glPushMatrix();
             glColor3f(0,0,0);
-            //glTranslatef(0, 20, 40);
-            glutSolidSphere(2, 10, 10);
+            paintBallVec[i].mZ = paintBallVec[i].mZ - paintBallVec[i].speed;    //"-" because shooting 'down' range
+            glTranslatef(paintBallVec[i].mX, paintBallVec[i].mY, paintBallVec[i].mZ);
+            glutSolidSphere(0.5, 10, 10);
         glPopMatrix();
     }
 }
-
-//this function is used to move particle objects
-//including bouncing and speed
-void moveDirection(){
-   
-}
-
 
 //this function displays output to the window
 void display(void) {
@@ -179,10 +182,9 @@ void display(void) {
 
     wall();
 
-    if (shot == true) {
-        drawPaintBalls();
-    }
-    //count++;
+    drawCrossHair();
+
+    drawPaintBalls();
 
     //switch our buffers for a smooth animation
     glutSwapBuffers();
@@ -210,24 +212,32 @@ void handleKeyboard(unsigned char key, int _x, int _y) {
     if (key == 'r' or key == 'R') {
         reset=true;
     }
-    
 }
 void handleSpecialKeyboard(int key, int _x, int _y) {
     
     if(key==GLUT_KEY_LEFT){
+        crossHairPos[0] = crossHairPos[0] - 0.05;
         cout<<"left"<<endl;
     }
     if(key==GLUT_KEY_RIGHT){
+        crossHairPos[0] = crossHairPos[0] + 0.05;
         cout<<"right"<<endl;
+    }
+    if(key == GLUT_KEY_UP){
+        crossHairPos[1] = crossHairPos[1] + 0.05;
+        cout<<"up"<<endl;
+    }
+    if(key == GLUT_KEY_DOWN){
+        crossHairPos[1] = crossHairPos[1] - 0.05;
+        cout<<"down"<<endl;
     }
 }
 
 void OnMouseClick(int button, int state, int x, int y) {
+    //shoot paintball
     if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-        //shoot the paintball
-        cout<<"HUHU"<<endl;
-        shot = true;
-        shootPaintBall();   //pass parameters of current 'crosshair'
+        cout<<"shot"<<endl;
+        shootPaintBall();
     }
 
     if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
