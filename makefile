@@ -32,7 +32,7 @@ PROGRAM_NAME=a3
 # 	./$(PROGRAM_NAME)$(EXEEXT)
 
 run :
-	$(CC) -o mainProj Paintball.cpp main.cpp $(CFLAGS) $(LDFLAGS) -Wno-deprecated
+	$(CC) -o mainProj Paintball.cpp Splatter.cpp main.cpp $(CFLAGS) $(LDFLAGS) -Wno-deprecated
 	./mainProj
 
 #when adding additional source files, such as boilerplateClass.cpp

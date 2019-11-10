@@ -5,6 +5,7 @@
 #include <math.h>
 #include <iostream>
 #include "Paintball.h"
+#include "Splatter.h"
 #include <vector>
 #include <string>
 
@@ -29,6 +30,7 @@ using namespace std;
 
 //global variables
 std::vector<Paintball> paintBallVec(0);
+std::vector<Splatter> splatterVec(0);
 //bool shot = false;
 bool reset = false;
 int cnt = 0;
@@ -130,9 +132,30 @@ void drawCrossHair() {
     glEnd();
 }
 
+//draw splatters on wall
+void drawSplatters() {    //note: add color of paintball to this
+    for(int i = 0; i < splatterVec.size(); i++){
+        glBegin(GL_POLYGON);
+            glColor3f(0,0,0);
+            glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY - 2, -34);
+            glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY - 2, -34);
+            glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY + 2, -34);
+            glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY + 2, -34);
+            glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY - 2, -34);
+        glEnd();
+    }
+}
+
+//add to vector of splatters
+void wallInteraction(int p) {
+    cout<<"hit"<<endl;
+    Splatter S(paintBallVec[p].mX, paintBallVec[p].mY);
+    splatterVec.push_back(S);
+}
+
 //shooting a paintball ads it to the vector
 void shootPaintBall(){
-    Paintball P(0, 9, 47);  //these should be mouse coords
+    Paintball P(crossHairPos[0], crossHairPos[1], crossHairPos[2]);
     paintBallVec.push_back(P);
 }
 
@@ -143,10 +166,15 @@ void drawPaintBalls(){
             glColor3f(0,0,0);
             paintBallVec[i].mZ = paintBallVec[i].mZ - paintBallVec[i].speed;    //"-" because shooting 'down' range
             glTranslatef(paintBallVec[i].mX, paintBallVec[i].mY, paintBallVec[i].mZ);
+            if (paintBallVec[i].mZ <= -35) {    //hit wall
+                wallInteraction(i);
+            }
             glutSolidSphere(0.5, 10, 10);
         glPopMatrix();
     }
 }
+
+
 
 //this function displays output to the window
 void display(void) {
@@ -186,6 +214,8 @@ void display(void) {
 
     drawPaintBalls();
 
+    drawSplatters();
+
     //switch our buffers for a smooth animation
     glutSwapBuffers();
 
@@ -211,6 +241,10 @@ void handleKeyboard(unsigned char key, int _x, int _y) {
     //reset simulation
     if (key == 'r' or key == 'R') {
         reset=true;
+    }
+    if (key == ' '){
+        cout<<"shot"<<endl;
+        shootPaintBall();
     }
 }
 void handleSpecialKeyboard(int key, int _x, int _y) {
