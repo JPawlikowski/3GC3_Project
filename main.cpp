@@ -155,7 +155,7 @@ void wallInteraction(int p) {
 
 //shooting a paintball ads it to the vector
 void shootPaintBall(){
-    Paintball P(crossHairPos[0], crossHairPos[1], crossHairPos[2]);
+    Paintball P(crossHairPos[0]*10, crossHairPos[1], crossHairPos[2]);
     paintBallVec.push_back(P);
 }
 
