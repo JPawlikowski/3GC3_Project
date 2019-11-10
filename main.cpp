@@ -34,6 +34,7 @@ std::vector<Splatter> splatterVec(0);
 //bool shot = false;
 bool reset = false;
 int cnt = 0;
+bool axisToggle = false;
 
 //crosshair coordinates
 float crossHairPos[3] = {0, 9, 47};
@@ -53,10 +54,17 @@ float diff[4] = {.7,.7,.7,1};
 
 //Floor map coordinates
 float floorCoord[4][3]={
-    {-20, 0, -20},
-    {-20, 0, 20},
-    {20, 0, -20},
-    {20, 0, 20}
+    {-20, 0, -40},
+    {20, 0, -40},
+    {20, 0, 40},
+    {-20, 0, 40}
+};
+
+float wallCoords[4][3]={
+    {-15, 0, -35},
+    {15, 0, -35},
+    {15, 20, -35},
+    {-15, 20, -35}
 };
 
 //material variables
@@ -70,43 +78,32 @@ void instructions()
 {
   cout<<"WELCOME TO 3D PAINTBALL SIMULATOR" <<endl;
   cout<<"======================================="<<endl;
-  cout<<"mouse- control target"  <<endl;
-  cout<<"right click- fire paintball"<<endl;
-
+  cout<<"arrow keys : move crosshairs"  <<endl;
+  cout<<"space : shoot paintball"<<endl;
 }
 
-
-//this funciton will draw a floor
-//if user inputs instructs, open hole in floor
+//Draw the wall which will be shot at
 void floor(){
-    //::floorCoord;
     glBegin(GL_POLYGON);
-        glColor3f(0,0.5,.5);
-        glVertex3f(-20,0,-40);
-        glVertex3f(20,0,-40);
-        glVertex3f(20,0,40);
-        glVertex3f(-20,0,40);
+    glColor3f(0,0.5,.5);
+    for(int i=0;i<4;i++){
+        glVertex3f(floorCoord[i][0],floorCoord[i][1],floorCoord[i][2]);
+    }
     glEnd();
-    
-
-    // for(int i=0;i<4;i++){
-    //          glVertex3f(floorCoord[i][0],floorCoord[i][1],floorCoord[i][2]);
-    //     }
-    
 }
 
+//Draw the floor in the simulation
 void wall(){
     //use variables from arrays here not raw numbers 'WALL_POS'
     glBegin(GL_QUADS);
         glColor3f(1, 1, 0);
-        glVertex3f(-15, 0, -35);
-        glVertex3f(15, 0, -35);
-        glVertex3f(15, 20, -35);
-        glVertex3f(-15, 20, -35);
+        for(int i=0;i<4;i++){
+        glVertex3f(wallCoords[i][0],wallCoords[i][1],wallCoords[i][2]);
+    }
     glEnd();
 }
 
-//draw x,y,z axis, useful for perspective and testing
+//draw x,y,z axis, useful for perspective and testing (OPTIONAL)
 void drawAxis() {
     glBegin(GL_LINES);
         glColor3f(1, 0, 0);
@@ -146,12 +143,11 @@ void drawSplatters() {    //note: add color of paintball to this
     }
 }
 
-//add to vector of splatters
+//add to vector of splatters and remove from paintball vector, parameter is index of paintball vector for current hit
 void wallInteraction(int p) {
-    cout<<"hit"<<endl;
-    Splatter S(paintBallVec[p].mX, paintBallVec[p].mY,paintBallVec[p].color);
+    Splatter S(paintBallVec[p].mX, paintBallVec[p].mY,paintBallVec[p].color);   //create new 'splatter'
     splatterVec.push_back(S);
-    //paintBallVec.erase(paintBallVec.begin()+i);
+    paintBallVec.erase(paintBallVec.begin()+p); //remove paintball
 }
 
 //shooting a paintball ads it to the vector
@@ -179,7 +175,6 @@ void drawPaintBalls(){
 
 //this function displays output to the window
 void display(void) {
-
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -204,9 +199,10 @@ void display(void) {
     //     glLightfv(GL_LIGHT0 +i,GL_SPECULAR,spec);
     // }
 
-    drawAxis();
+    if (axisToggle == true){
+        drawAxis();
+    }
 
-    //draw floor
     floor();
 
     wall();
@@ -232,8 +228,6 @@ void projection(){
 
 //react to users keyboard input
 void handleKeyboard(unsigned char key, int _x, int _y) {
-    //CALL GLOBAL VARIABLES
-    //::reset;
 
     //close window
     if (key == 'q' or key == 'Q') {
@@ -243,37 +237,37 @@ void handleKeyboard(unsigned char key, int _x, int _y) {
     if (key == 'r' or key == 'R') {
         reset=true;
     }
+    //shootpaintball
     if (key == ' '){
         cout<<"shot"<<endl;
         shootPaintBall();
+    }
+    //toggle x, y, z axis display
+    if (key == 'a' || key == 'A'){
+        axisToggle = !axisToggle;
     }
 }
 void handleSpecialKeyboard(int key, int _x, int _y) {
     
     if(key==GLUT_KEY_LEFT){
         crossHairPos[0] = crossHairPos[0] - 0.05;
-        cout<<"left"<<endl;
     }
     if(key==GLUT_KEY_RIGHT){
         crossHairPos[0] = crossHairPos[0] + 0.05;
-        cout<<"right"<<endl;
     }
     if(key == GLUT_KEY_UP){
         crossHairPos[1] = crossHairPos[1] + 0.05;
-        cout<<"up"<<endl;
     }
     if(key == GLUT_KEY_DOWN){
         crossHairPos[1] = crossHairPos[1] - 0.05;
-        cout<<"down"<<endl;
     }
 }
 
 void OnMouseClick(int button, int state, int x, int y) {
-    //shoot paintball
-    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-        cout<<"shot"<<endl;
-        shootPaintBall();
-    }
+    //shoot paintball with mouse temporarily removed, spacebar instead
+    // if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+    //     shootPaintBall();
+    // }
 
     if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
 
