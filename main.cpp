@@ -161,8 +161,22 @@ void shootPaintBall(){
 
 //increment z value of all active paintballs
 void drawPaintBalls(){
+    GLfloat dummaterialDiff[3];
+    GLfloat dummaterialSpec[4] = {0,0,0,0};
+    GLfloat dummaterialAmb[4] = {0,0,0,0};
+    GLfloat dummaterialShiny[] = {0};
     for(int i = 0; i < paintBallVec.size(); i++){
+        dummaterialDiff[0]=paintBallVec[i].color[0];
+        dummaterialDiff[1]=paintBallVec[i].color[1];
+        dummaterialDiff[2]=paintBallVec[i].color[2];
+
         glPushMatrix();
+
+            glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiff);
+            glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmb);
+            glMaterialfv(GL_FRONT, GL_SHININESS, dummaterialShiny);
+            glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpec);
+
             glColor3f(paintBallVec[i].color[0],paintBallVec[i].color[1],paintBallVec[i].color[2]);
             paintBallVec[i].mZ = paintBallVec[i].mZ - paintBallVec[i].speed;    //"-" because shooting 'down' range
             glTranslatef(paintBallVec[i].mX, paintBallVec[i].mY, paintBallVec[i].mZ);
@@ -195,13 +209,16 @@ void display(void) {
         //cout<<"we counting"<<endl;  //LMAO nice T
     //}
 
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0); 
+    glEnable(GL_LIGHT1); 
     // LIGHTING, SET CHANNELS 
-    // for (unsigned int i = 0; i < 2; i++) {
-    //     glLightfv(GL_LIGHT0 + i, GL_POSITION, lightPos[i]);
-    //     glLightfv(GL_LIGHT0 +i,GL_AMBIENT, amb);
-    //     glLightfv(GL_LIGHT0 +i,GL_DIFFUSE, diff);
-    //     glLightfv(GL_LIGHT0 +i,GL_SPECULAR,spec);
-    // }
+    for (unsigned int i = 0; i < 2; i++) {
+        glLightfv(GL_LIGHT0 + i, GL_POSITION, lightPos[i]);
+        glLightfv(GL_LIGHT0 +i,GL_AMBIENT, amb);
+        glLightfv(GL_LIGHT0 +i,GL_DIFFUSE, diff);
+        glLightfv(GL_LIGHT0 +i,GL_SPECULAR,spec);
+    }
 
     drawAxis();
 
