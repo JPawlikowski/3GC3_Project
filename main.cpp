@@ -98,7 +98,7 @@ void floor(){
 void wall(){
     //use variables from arrays here not raw numbers 'WALL_POS'
     glBegin(GL_QUADS);
-        glColor3f(0, 1, 0);
+        glColor3f(1, 1, 0);
         glVertex3f(-15, 0, -35);
         glVertex3f(15, 0, -35);
         glVertex3f(15, 20, -35);
@@ -136,7 +136,7 @@ void drawCrossHair() {
 void drawSplatters() {    //note: add color of paintball to this
     for(int i = 0; i < splatterVec.size(); i++){
         glBegin(GL_POLYGON);
-            glColor3f(0,0,0);
+            glColor3f(splatterVec[i].color[0],splatterVec[i].color[1],splatterVec[i].color[2]);
             glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY - 2, -34);
             glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY - 2, -34);
             glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY + 2, -34);
@@ -149,7 +149,7 @@ void drawSplatters() {    //note: add color of paintball to this
 //add to vector of splatters
 void wallInteraction(int p) {
     cout<<"hit"<<endl;
-    Splatter S(paintBallVec[p].mX, paintBallVec[p].mY);
+    Splatter S(paintBallVec[p].mX, paintBallVec[p].mY,paintBallVec[p].color);
     splatterVec.push_back(S);
 }
 
