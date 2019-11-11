@@ -67,6 +67,13 @@ float wallCoords[4][3]={
     {-15, 20, -35}
 };
 
+float tableCoords[4][3]={
+    {-3, 7, 42},
+    {3, 7, 42},
+    {3, 7, 49},
+    {-3, 7, 49}
+};
+
 //material variables
 GLfloat materialAmbient[4] = {0,0,0,1};
 GLfloat materialSpecular[4] = {.5,.5,.5,1};
@@ -83,6 +90,7 @@ void instructions()
 }
 
 //Draw the wall which will be shot at
+
 void floor(){
 
     GLfloat dummaterialDiff[3]={0,0.5,.5};
@@ -104,13 +112,23 @@ void floor(){
 }
 
 //Draw the floor in the simulation
-void wall(){
+void wall() {
     //use variables from arrays here not raw numbers 'WALL_POS'
     glBegin(GL_QUADS);
         glColor3f(1, 1, 0);
         for(int i=0;i<4;i++){
-        glVertex3f(wallCoords[i][0],wallCoords[i][1],wallCoords[i][2]);
-    }
+            glVertex3f(wallCoords[i][0],wallCoords[i][1],wallCoords[i][2]);
+        }
+    glEnd();
+}
+
+//Draw a table which the shooter stands behind
+void drawTable() {
+    glBegin(GL_POLYGON);
+        glColor3f(0.9,0.6,0.3);
+        for(int i=0;i<4;i++){
+            glVertex3f(tableCoords[i][0],tableCoords[i][1],tableCoords[i][2]);
+        }
     glEnd();
 }
 
@@ -203,7 +221,6 @@ void drawPaintBalls(){
 }
 
 
-
 //this function displays output to the window
 void display(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -240,6 +257,8 @@ void display(void) {
     floor();
 
     wall();
+
+    drawTable();
 
     drawCrossHair();
 
