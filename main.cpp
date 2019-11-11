@@ -16,6 +16,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// //music
+// #include <Windows.h>
+// #include <MMSystem.h>
+
 using namespace std;
 
 #ifdef __APPLE__
@@ -35,6 +39,9 @@ std::vector<Splatter> splatterVec(0);
 bool reset = false;
 int cnt = 0;
 bool axisToggle = false;
+
+//total shots fired
+float shotsFired=0;
 
 //crosshair coordinates
 float crossHairPos[3] = {0, 9, 47};
@@ -89,20 +96,63 @@ void instructions()
   cout<<"space : shoot paintball"<<endl;
 }
 
-//Draw the wall which will be shot at
+//display shots fired on top of wall
+void textDisplay()
+{
+  
+  //set properties of text
+  GLfloat dummaterialDiff[3]={.2,.8,.4};
+  glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiff);
+  
+  //get length of shotsFired variable
+  string number= to_string((int)shotsFired);
+  int numSize=number.length();
+  char word[]="Shots fired: ";
+  char output[numSize+14];
 
-void floor(){
+  for(int i =0;i<numSize+14;i++){
+    if(i<13){
+        for(int j=0;j<13;j++){
+            output[i]=word[j];           
+            i++;
+        }
 
-    GLfloat dummaterialDiff[3]={.2,.8,.4};
-    GLfloat dummaterialSpec[4] = {0,0,0,0};
-    GLfloat dummaterialAmb[4] = {1,1,1,0};
-    GLfloat dummaterialShiny[] = {4};
+    }else{
+        for(int j=0;j<numSize;j++){
+            // cout<<"output: "<<output<<endl;
+            output[i]=number[j];
+            
+            i++;
+        }
+    }
     
+  }
+      
+
+  glColor3f( 0, 0, 0 );
+  glRasterPos3f(-6, 25,0);
+  int len  = (int)strlen(output);
+
+  for (int i = 0; i < len; i++) {
+    glutBitmapCharacter(GLUT_BITMAP_9_BY_15, output[i]);
+  }
+  
+}
+
+//Draw the floor in the simulation
+void floor(){
+    //define materials
+    GLfloat dummaterialDiff[3]={.2,.8,.4};
+    GLfloat dummaterialSpec[4] = {.2,0,0,0};
+    GLfloat dummaterialAmb[4] = {.5,.5,0,0};
+    GLfloat dummaterialShiny[] = {4};
+    //set material properties
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiff);
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmb);
     glMaterialfv(GL_FRONT, GL_SHININESS, dummaterialShiny);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpec);
 
+    //draw floor
     glBegin(GL_POLYGON);
     glColor3f(0,0.5,.5);
     for(int i=0;i<4;i++){
@@ -110,8 +160,7 @@ void floor(){
     }
     glEnd();
 }
-
-//Draw the floor in the simulation
+//Draw the wall which will be shot at
 void wall() {
     GLfloat dummaterialDiff[3]={.5,.2,0};
     GLfloat dummaterialSpec[4] = {0,0,0,0};
@@ -170,12 +219,47 @@ void drawAxis() {
 
 //draw aiming point
 void drawCrossHair() {
+    GLfloat dummaterialDiff[3]={1,0,0};
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiff);
+
     glBegin(GL_LINES);
-        glColor3f(1,0,0);
+        glColor3f(1,0,0);\
         glVertex3f(crossHairPos[0] - 0.1, crossHairPos[1], crossHairPos[2]);
         glVertex3f(crossHairPos[0] + 0.1, crossHairPos[1], crossHairPos[2]);
+
         glVertex3f(crossHairPos[0], crossHairPos[1] + 0.1, crossHairPos[2]);
         glVertex3f(crossHairPos[0], crossHairPos[1] - 0.1, crossHairPos[2]);
+    glEnd();
+
+    //draw circle around cross
+    int segments=100;
+    glBegin(GL_LINE_LOOP);
+    for(int i = 0; i < segments; i++)
+    {   
+        //calculate angle
+        float theta = 2.0f * 3.1415926f * float(i) / segments;
+        float r=.1;
+        //calculate coordinates
+        float x = r * cosf(theta)+crossHairPos[0];
+        float y = r * sinf(theta)+crossHairPos[1];
+        float z=crossHairPos[2];
+
+        glVertex3f(x , y ,z);//output vertex
+    }
+    glEnd();
+    glBegin(GL_LINE_LOOP);
+    for(int i = 0; i < segments; i++)
+    {
+        //calculate angle
+        float theta = 2.0f * 3.1415926f * float(i) / segments;
+        float r=.12;
+        //calculate coordinates
+        float x = r * cosf(theta)+crossHairPos[0];
+        float y = r * sinf(theta)+crossHairPos[1];
+        float z=crossHairPos[2];
+
+        glVertex3f(x , y ,z);//output vertex
+    }
     glEnd();
 }
 
@@ -208,16 +292,18 @@ void wallInteraction(int p) {
 
 //shooting a paintball ads it to the vector
 void shootPaintBall(){
-    cout<<"cross hair="<<crossHairPos[1]<<endl;
+    ::shotsFired;
+    shotsFired+=1;
     Paintball P(crossHairPos[0]*10, crossHairPos[1], crossHairPos[2]);
     paintBallVec.push_back(P);
 }
 
 //increment z value of all active paintballs
 void drawPaintBalls(){
+    //declare materials
     GLfloat dummaterialDiff[3];
     GLfloat dummaterialSpec[4] = {0,0,0,0};
-    GLfloat dummaterialAmb[4] = {0,0,0,0};
+    GLfloat dummaterialAmb[4] = {1,1,1,0};
     GLfloat dummaterialShiny[] = {0};
     for(int i = 0; i < paintBallVec.size(); i++){
         dummaterialDiff[0]=paintBallVec[i].color[0];
@@ -226,6 +312,7 @@ void drawPaintBalls(){
 
         glPushMatrix();
 
+            //set materials
             glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiff);
             glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmb);
             glMaterialfv(GL_FRONT, GL_SHININESS, dummaterialShiny);
@@ -234,7 +321,8 @@ void drawPaintBalls(){
             glColor3f(paintBallVec[i].color[0],paintBallVec[i].color[1],paintBallVec[i].color[2]);
             paintBallVec[i].mZ = paintBallVec[i].mZ - paintBallVec[i].speed;    //"-" because shooting 'down' range
             glTranslatef(paintBallVec[i].mX, paintBallVec[i].mY, paintBallVec[i].mZ);
-            if (paintBallVec[i].mZ <= -35) {    //hit wall
+            if (paintBallVec[i].mZ <= -35 and paintBallVec[i].mX<15 
+            and paintBallVec[i].mX>-15 and paintBallVec[i].mY<20 and paintBallVec[i].mY>0 ) {    //hit wall
                 wallInteraction(i);
             }
             glutSolidSphere(0.5, 10, 10);
@@ -255,12 +343,10 @@ void display(void) {
     if(reset == true){
         instructions();
         reset = false;
+        
     }
 
-    //if(count%400 == 0){
-        //cout<<"we counting"<<endl;  //LMAO nice T
-    //}
-
+    //enable lighting
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0); 
     glEnable(GL_LIGHT1); 
@@ -275,6 +361,9 @@ void display(void) {
     if (axisToggle == true){
         drawAxis();
     }
+
+    //
+    textDisplay();
 
     floor();
 
@@ -303,7 +392,6 @@ void projection(){
 
 //react to users keyboard input
 void handleKeyboard(unsigned char key, int _x, int _y) {
-
     //close window
     if (key == 'q' or key == 'Q') {
         exit(0);
@@ -314,7 +402,7 @@ void handleKeyboard(unsigned char key, int _x, int _y) {
     }
     //shootpaintball
     if (key == ' '){
-        cout<<"shot"<<endl;
+        // cout<<"shot"<<endl;
         shootPaintBall();
     }
     //toggle x, y, z axis display
@@ -351,6 +439,7 @@ void OnMouseClick(int button, int state, int x, int y) {
 }
 
 int main(int argc, char** argv) {
+
 	glutInit(&argc, argv);     //starts up GLUT
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
     //create window
@@ -368,6 +457,7 @@ int main(int argc, char** argv) {
     glutKeyboardFunc(handleKeyboard);
     glutSpecialFunc(handleSpecialKeyboard);
     glutDisplayFunc(display);
+    // PlaySound("35 - Lost Woods.wav", NULL, SND_SYNC);
 
     glutMainLoop();             //starts the event glutMainLoop
 
