@@ -93,7 +93,7 @@ void instructions()
 
 void floor(){
 
-    GLfloat dummaterialDiff[3]={0,0.5,.5};
+    GLfloat dummaterialDiff[3]={.2,.8,.4};
     GLfloat dummaterialSpec[4] = {0,0,0,0};
     GLfloat dummaterialAmb[4] = {1,1,1,0};
     GLfloat dummaterialShiny[] = {4};
@@ -113,6 +113,16 @@ void floor(){
 
 //Draw the floor in the simulation
 void wall() {
+    GLfloat dummaterialDiff[3]={.5,.2,0};
+    GLfloat dummaterialSpec[4] = {0,0,0,0};
+    GLfloat dummaterialAmb[4] = {1,1,1,0};
+    GLfloat dummaterialShiny[] = {4};
+    
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiff);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmb);
+    glMaterialfv(GL_FRONT, GL_SHININESS, dummaterialShiny);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpec);
+
     //use variables from arrays here not raw numbers 'WALL_POS'
     glBegin(GL_QUADS);
         glColor3f(1, 1, 0);
@@ -124,6 +134,17 @@ void wall() {
 
 //Draw a table which the shooter stands behind
 void drawTable() {
+
+    GLfloat dummaterialDiff[3]={0.9,0.6,0.3};
+    GLfloat dummaterialSpec[4] = {0,0,0,0};
+    GLfloat dummaterialAmb[4] = {1,1,1,0};
+    GLfloat dummaterialShiny[] = {4};
+    
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiff);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmb);
+    glMaterialfv(GL_FRONT, GL_SHININESS, dummaterialShiny);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpec);
+
     glBegin(GL_POLYGON);
         glColor3f(0.9,0.6,0.3);
         for(int i=0;i<4;i++){
@@ -187,6 +208,7 @@ void wallInteraction(int p) {
 
 //shooting a paintball ads it to the vector
 void shootPaintBall(){
+    cout<<"cross hair="<<crossHairPos[1]<<endl;
     Paintball P(crossHairPos[0]*10, crossHairPos[1], crossHairPos[2]);
     paintBallVec.push_back(P);
 }
