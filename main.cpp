@@ -84,6 +84,17 @@ void instructions()
 
 //Draw the wall which will be shot at
 void floor(){
+
+    GLfloat dummaterialDiff[3]={0,0.5,.5};
+    GLfloat dummaterialSpec[4] = {0,0,0,0};
+    GLfloat dummaterialAmb[4] = {1,1,1,0};
+    GLfloat dummaterialShiny[] = {4};
+    
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiff);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmb);
+    glMaterialfv(GL_FRONT, GL_SHININESS, dummaterialShiny);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpec);
+
     glBegin(GL_POLYGON);
     glColor3f(0,0.5,.5);
     for(int i=0;i<4;i++){
@@ -131,7 +142,13 @@ void drawCrossHair() {
 
 //draw splatters on wall
 void drawSplatters() {    //note: add color of paintball to this
-    for(int i = 0; i < splatterVec.size(); i++){
+    
+    
+    
+
+    for(int i = splatterVec.size()-1; i >=0 ; i--){
+        GLfloat dummaterialDiff[3]={splatterVec[i].color[0],splatterVec[i].color[1],splatterVec[i].color[2]};
+        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiff);
         glBegin(GL_POLYGON);
             glColor3f(splatterVec[i].color[0],splatterVec[i].color[1],splatterVec[i].color[2]);
             glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY - 2, -34);
