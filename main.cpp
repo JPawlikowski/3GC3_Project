@@ -110,6 +110,9 @@ void textDisplay()
   char word[]="Shots fired: ";
   char output[numSize+14];
 
+  //create a char list that holds contents "shots fired: 125"
+  //- 125 is example value for variablenumber
+  //not working for some reason the output is just "shots fired: " and the number is completely ignored
   for(int i =0;i<numSize+14;i++){
     if(i<13){
         for(int j=0;j<13;j++){
