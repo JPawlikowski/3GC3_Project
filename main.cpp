@@ -9,7 +9,7 @@
 #include <vector>
 #include <string>
 
-//what are these?
+//********
 #define KEY_UP 72
 #define KEY_DOWN 80
 
@@ -47,8 +47,9 @@ float shotsFired=0;
 float crossHairPos[3] = {0, 9, 47};
 
 // One light for now
-GLfloat lightPos[1][4] = {
-    { 5, 25, 5, 1 },
+float lightPos[2][4] = {
+    { 5, 20, 0, 1 },
+    { -5, 20, 0, 1 }
 };
 
 //camera position
@@ -57,7 +58,7 @@ float eye[3] = {0, 10, 50};
 //some basic lighting characteristics
 float amb[4] = {0,0,0,0};
 float spec[4] = {1,1,1,1};
-float diff[4] = {.7,.7,.7,1};
+float diff[4] = {0.7,0.7,0.7,1};
 
 //Floor map coordinates
 float floorCoord[4][3]={
@@ -69,9 +70,9 @@ float floorCoord[4][3]={
 
 float wallCoords[4][3]={
     {-15, 0, -35},
-    {15, 0, -35},
+    {-15, 20, -35},
     {15, 20, -35},
-    {-15, 20, -35}
+    {15, 0, -35},
 };
 
 float tableCoords[4][3]={
@@ -89,7 +90,7 @@ float paintBallColour[3]={0,0,0};
 //material variables
 GLfloat materialAmbient[4] = {0,0,0,1};
 GLfloat materialSpecular[4] = {.5,.5,.5,1};
-GLfloat materialDiffuse[4] = {1,0,0,1};
+GLfloat materialDiffuse[4] = {1,0,0,0};
 GLfloat materialShininess[] = {10.0};
 
 //this function is called once at the beginning of the program to print instructions for user
@@ -107,11 +108,10 @@ void instructions()
 
 //display shots fired on top of wall
 void textDisplay()
-{
-  
+{ 
   //set properties of text
-  GLfloat dummaterialDiff[3]={.2,.8,.4};
-  glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiff);
+  GLfloat dummaterialDiff[4]={.2,.8,.4,0};
+  //glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiff);
   
   //get length of shotsFired variable
   string number= to_string((int)shotsFired);
@@ -137,36 +137,34 @@ void textDisplay()
             i++;
         }
     }
-    
-  }
+    }
       
-
-  glColor3f( 0, 0, 0 );
+  //glColor3f( 0, 0, 0 );
   glRasterPos3f(-6, 25,0);
   int len  = (int)strlen(output);
 
   for (int i = 0; i < len; i++) {
     glutBitmapCharacter(GLUT_BITMAP_9_BY_15, output[i]);
   }
-  
 }
 
 //Draw the floor in the simulation
 void floor(){
     //define materials
-    GLfloat dummaterialDiff[3]={.2,.8,.4};
-    GLfloat dummaterialSpec[4] = {.2,0,0,0};
-    GLfloat dummaterialAmb[4] = {.5,.5,0,0};
-    GLfloat dummaterialShiny[] = {4};
+    GLfloat dummaterialDiffFloor[4]={0.2, 0.8, 0.4, 1.0};
+    GLfloat dummaterialSpecFloor[4] = {0.0, 0.0, 0.0, 1.0};
+    GLfloat dummaterialAmbFloor[4] = {1.0, 1.0, 1.0, 1.0};
+    GLfloat dummaterialShinyFloor = 4.0;
     //set material properties
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiff);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmb);
-    glMaterialfv(GL_FRONT, GL_SHININESS, dummaterialShiny);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpec);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiffFloor);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmbFloor);
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, dummaterialShinyFloor);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecFloor);
 
     //draw floor
     glBegin(GL_POLYGON);
-    glColor3f(0,0.5,.5);
+    //glColor3f(0,0.5,.5);
+    glNormal3f(0.0,1.0,0.0);
     for(int i=0;i<4;i++){
         glVertex3f(floorCoord[i][0],floorCoord[i][1],floorCoord[i][2]);
     }
@@ -174,27 +172,28 @@ void floor(){
 }
 //Draw the wall which will be shot at
 void wall() {
-    GLfloat dummaterialDiff[3]={.5,.2,0};
-    GLfloat dummaterialSpec[4] = {0,0,0,0};
-    GLfloat dummaterialAmb[4] = {1,1,1,0};
-    GLfloat dummaterialShiny[] = {4};
+    GLfloat dummaterialDiffWall[4]={0.5, .2, 0.0, 0.0};
+    GLfloat dummaterialSpecWall[4] = {0, 0, 0, 0};
+    GLfloat dummaterialAmbWall[4] = {1.0, 1.0, 1.0, 0};
+    GLfloat dummaterialShinyWall = 4.0;
     
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiff);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmb);
-    glMaterialfv(GL_FRONT, GL_SHININESS, dummaterialShiny);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpec);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiffWall);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmbWall);
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, dummaterialShinyWall);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecWall);
 
-    //use variables from arrays here not raw numbers 'WALL_POS'
     glBegin(GL_QUADS);
-        glColor3f(1, 1, 0);
+        glNormal3f(0.0,0.0,1.0);
+        //glColor3f(1, 1, 0);
         for(int i=0;i<4;i++){
-            glVertex3f(wallCoords[i][0],wallCoords[i][1],wallCoords[i][2]);
+            glVertex3f(wallCoords[i][0], wallCoords[i][1], wallCoords[i][2]);
         }
     glEnd();
 }
 
 //Draw a table which the shooter stands behind
 void drawTable() {
+<<<<<<< HEAD
 
     GLfloat dummaterialDiff[3]={0.9,0.6,0.3};
     GLfloat dummaterialSpec[4] = {0,0,0,0};
@@ -204,14 +203,21 @@ void drawTable() {
     GLfloat ballDiff2[3]={0,1,0};
     GLfloat ballDiff3[3]={0,0,1};
     
+=======
+    GLfloat dummaterialDiffTable[4]={0.9, 0.6, 0.3, 0};
+    GLfloat dummaterialSpecTable[4] = {0.0, 0.0, 0.0, 0.0};
+    GLfloat dummaterialAmbTable[4] = {1.0 , 1.0, 1.0, 0};
+    GLfloat dummaterialShinyTable = 4.0;
+>>>>>>> 5f1786d7fe6c02df016e18639cf454bb081d16c2
     
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiff);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmb);
-    glMaterialfv(GL_FRONT, GL_SHININESS, dummaterialShiny);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpec);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiffTable);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmbTable);
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, dummaterialShinyTable);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecTable);
 
     glBegin(GL_POLYGON);
-        glColor3f(0.9,0.6,0.3);
+    glNormal3f(0,1.0,0);
+        //glColor3f(0.9,0.6,0.3);
         for(int i=0;i<4;i++){
             glVertex3f(tableCoords[i][0],tableCoords[i][1],tableCoords[i][2]);
         }
@@ -242,27 +248,27 @@ void drawTable() {
 }
 
 //draw x,y,z axis, useful for perspective and testing (OPTIONAL)
-void drawAxis() {
-    glBegin(GL_LINES);
-        glColor3f(1, 0, 0);
-        glVertex3f(0,0,0);
-        glVertex3f(50,0,0);
-        glColor3f(0,1,0);
-        glVertex3f(0,0,0);
-        glVertex3f(0,50,0);
-        glColor3f(0,0,1);
-        glVertex3f(0,0,0);
-        glVertex3f(0,0,50);
-    glEnd();
-}
+// void drawAxis() {
+//     glBegin(GL_LINES);
+//         glColor3f(1, 0, 0);
+//         glVertex3f(0,0,0);
+//         glVertex3f(50,0,0);
+//         glColor3f(0,1,0);
+//         glVertex3f(0,0,0);
+//         glVertex3f(0,50,0);
+//         glColor3f(0,0,1);
+//         glVertex3f(0,0,0);
+//         glVertex3f(0,0,50);
+//     glEnd();
+// }
 
 //draw aiming point
 void drawCrossHair() {
-    GLfloat dummaterialDiff[3]={1,0,0};
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiff);
+    GLfloat dummaterialDiffCrossHair[4]={1,0,0,0};
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiffCrossHair);
 
     glBegin(GL_LINES);
-        glColor3f(1,0,0);\
+        //glColor3f(1,0,0);
         glVertex3f(crossHairPos[0] - 0.1, crossHairPos[1], crossHairPos[2]);
         glVertex3f(crossHairPos[0] + 0.1, crossHairPos[1], crossHairPos[2]);
 
@@ -297,25 +303,33 @@ void drawCrossHair() {
         float y = r * sinf(theta)+crossHairPos[1];
         float z=crossHairPos[2];
 
-        glVertex3f(x , y ,z);//output vertex
+        glVertex3f(x , y ,z); //output vertex
     }
     glEnd();
 }
 
 //draw splatters on wall
-void drawSplatters() {    //note: add color of paintball to this
 
-    for(int i = splatterVec.size()-1; i >=0 ; i--){
-        GLfloat dummaterialDiff[3]={splatterVec[i].color[0],splatterVec[i].color[1],splatterVec[i].color[2]};
-        if(colourChanged){
-            dummaterialDiff[0]=paintBallColour[0];
-            dummaterialDiff[1]=paintBallColour[1];
-            dummaterialDiff[2]=paintBallColour[2];
-        }
+
+void drawSplatters() {
+    GLfloat dummaterialDiffSplatter[4]={0.5, 0.2, 0.0, 0.0};
+    GLfloat dummaterialSpecSplatter[4] = {0.0, 0.0, 0.0, 0.0};
+    GLfloat dummaterialAmbSplatter[4] = {1.0, 1.0, 1.0, 0.0};
+    GLfloat dummaterialShinySplatter = 4.0;
+    //glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiffSplatter);
+    // glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmbSplatter);
+    // glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, dummaterialShinySplatter);
+    // glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecSplatter);
+
+    for(int i = splatterVec.size()-1; i >=0 ; i--) { 
+        GLfloat dummaterialDiffSplatter[4]={splatterVec[i].color[0], splatterVec[i].color[1], splatterVec[i].color[2], 0};
+        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiffSplatter);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmbSplatter);
+        glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, dummaterialShinySplatter);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecSplatter);
         
-        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiff);
         glBegin(GL_POLYGON);
-            glColor3f(splatterVec[i].color[0],splatterVec[i].color[1],splatterVec[i].color[2]);
+            //glColor3f(splatterVec[i].color[0],splatterVec[i].color[1],splatterVec[i].color[2]);
             glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY - 2, -34);
             glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY - 2, -34);
             glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY + 2, -34);
@@ -327,7 +341,7 @@ void drawSplatters() {    //note: add color of paintball to this
 
 //add to vector of splatters and remove from paintball vector, parameter is index of paintball vector for current hit
 void wallInteraction(int p) {
-    Splatter S(paintBallVec[p].mX, paintBallVec[p].mY,paintBallVec[p].color);   //create new 'splatter'
+    Splatter S(paintBallVec[p].mX, paintBallVec[p].mY, paintBallVec[p].color);   //create new 'splatter'
     splatterVec.push_back(S);
     paintBallVec.erase(paintBallVec.begin()+p); //remove paintball
 }
@@ -343,11 +357,12 @@ void shootPaintBall(){
 //increment z value of all active paintballs
 void drawPaintBalls(){
     //declare materials
-    GLfloat dummaterialDiff[3];
-    GLfloat dummaterialSpec[4] = {0,0,0,0};
-    GLfloat dummaterialAmb[4] = {1,1,1,0};
-    GLfloat dummaterialShiny[] = {0};
+    GLfloat dummaterialDiffBall[4] = {1.0, 1.0, 1.0, 1.0};
+    GLfloat dummaterialSpecBall[4] = {0.0, 0.0, 0.0, 1.0};
+    GLfloat dummaterialAmbBall[4] = {1.0, 1.0, 1.0, 1.0};
+    GLfloat dummaterialShinyBall = 2.0;
     for(int i = 0; i < paintBallVec.size(); i++){
+
 
         if(colourChanged){
             dummaterialDiff[0]=paintBallColour[0];
@@ -361,23 +376,24 @@ void drawPaintBalls(){
         
 
         glPushMatrix();
-
             //set materials
-            glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiff);
-            glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmb);
-            glMaterialfv(GL_FRONT, GL_SHININESS, dummaterialShiny);
-            glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpec);
-
-            glColor3f(paintBallVec[i].color[0],paintBallVec[i].color[1],paintBallVec[i].color[2]);
+            glMaterialfv(GL_FRONT, GL_DIFFUSE, dummaterialDiffBall);
+            glMaterialfv(GL_FRONT, GL_AMBIENT, dummaterialAmbBall);
+            glMaterialf(GL_FRONT, GL_SHININESS, dummaterialShinyBall);
+            glMaterialfv(GL_FRONT, GL_SPECULAR, dummaterialSpecBall);
+        
+            //glColor3f(paintBallVec[i].color[0], paintBallVec[i].color[1], paintBallVec[i].color[2]);
             paintBallVec[i].mZ = paintBallVec[i].mZ - paintBallVec[i].speed;    //"-" because shooting 'down' range
             glTranslatef(paintBallVec[i].mX, paintBallVec[i].mY, paintBallVec[i].mZ);
+        
             if (paintBallVec[i].mZ <= -35 and paintBallVec[i].mX<15 
-            and paintBallVec[i].mX>-15 and paintBallVec[i].mY<20 and paintBallVec[i].mY>0 ) {    //hit wall
+            and paintBallVec[i].mX>-15 and paintBallVec[i].mY<20 and paintBallVec[i].mY>0) {    //hit wall
                 wallInteraction(i);
             }
-            glutSolidSphere(0.5, 10, 10);
+         
+            glutSolidSphere(1, 100, 100);
         glPopMatrix();
-    }
+     }
 }
 
 
@@ -393,27 +409,31 @@ void display(void) {
     if(reset == true){
         instructions();
         reset = false;
-        
     }
 
     //enable lighting
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0); 
-    glEnable(GL_LIGHT1); 
-    // LIGHTING, SET CHANNELS 
-    for (unsigned int i = 0; i < 2; i++) {
-        glLightfv(GL_LIGHT0 + i, GL_POSITION, lightPos[i]);
-        glLightfv(GL_LIGHT0 +i,GL_AMBIENT, amb);
-        glLightfv(GL_LIGHT0 +i,GL_DIFFUSE, diff);
-        glLightfv(GL_LIGHT0 +i,GL_SPECULAR,spec);
-    }
+    // glEnable(GL_LIGHTING);
+    // glEnable(GL_LIGHT0); 
+    // glEnable(GL_LIGHT1);
+    // // LIGHTING, SET CHANNELS 
 
-    if (axisToggle == true){
-        drawAxis();
-    }
+    for (unsigned int j = 0; j < 2; j++) {
+        glLightfv(GL_LIGHT0 +j, GL_POSITION, lightPos[j]);
+        glLightfv(GL_LIGHT0 +j, GL_AMBIENT, amb);
+        glLightfv(GL_LIGHT0 +j, GL_DIFFUSE, diff);
+        glLightfv(GL_LIGHT0 +j, GL_SPECULAR, spec);
+    }   
+    // glLightfv(GL_LIGHT0, GL_POSITION, lightPos[0]);
+    // glLightfv(GL_LIGHT0, GL_AMBIENT, amb);
+    // glLightfv(GL_LIGHT0, GL_DIFFUSE, diff);
+    // glLightfv(GL_LIGHT0, GL_SPECULAR, spec);
 
-    //
-    textDisplay();
+
+    // if (axisToggle == true){
+    //     drawAxis();
+    // }
+
+    //textDisplay();
 
     floor();
 
@@ -487,7 +507,7 @@ void handleKeyboard(unsigned char key, int _x, int _y) {
     }
 }
 void handleSpecialKeyboard(int key, int _x, int _y) {
-    
+    //crosshair position
     if(key==GLUT_KEY_LEFT){
         crossHairPos[0] = crossHairPos[0] - 0.05;
     }
@@ -509,7 +529,7 @@ void OnMouseClick(int button, int state, int x, int y) {
     // }
 
     if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
-
+        //empty for now
     }
 
 }
@@ -524,11 +544,20 @@ int main(int argc, char** argv) {
     glutCreateWindow("Paintball Range");  //creates the window
     
     //enable Z buffer test, otherwise things appear in the order they're drawn
-    glEnable(GL_DEPTH_TEST);
+    
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0); 
+    glEnable(GL_LIGHT1);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
+
     //glEnable(GL_CULL_FACE);
     //glCullFace(GL_BACK);
     //glShadeModel(GL_SMOOTH);
     projection();
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_NORMALIZE);
+
     glutMouseFunc(OnMouseClick);
     glutKeyboardFunc(handleKeyboard);
     glutSpecialFunc(handleSpecialKeyboard);
