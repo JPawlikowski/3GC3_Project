@@ -327,11 +327,15 @@ void drawSplatters() {
     GLfloat dummaterialSpecSplatter[4] = {0.0, 0.0, 0.0, 0.0};
     GLfloat dummaterialAmbSplatter[4] = {1.0, 1.0, 1.0, 0.0};
     GLfloat dummaterialShinySplatter = 4.0;
+<<<<<<< HEAD
+    
+=======
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiffSplatter);
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmbSplatter);
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, dummaterialShinySplatter);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecSplatter);
 
+>>>>>>> fb1056ae10a3b8f5f29255cef07439b38928a268
     for(int i = splatterVec.size()-1; i >=0 ; i--) { 
         GLfloat dummaterialDiffSplatter[4]={splatterVec[i].color[0], splatterVec[i].color[1], splatterVec[i].color[2], 0};
         glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiffSplatter);
@@ -339,6 +343,14 @@ void drawSplatters() {
         glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, dummaterialShinySplatter);
         glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecSplatter);
 
+<<<<<<< HEAD
+        glBegin(GL_QUADS);
+            glNormal3f(0.0,0.0,1.0);
+            glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY - 2, -34.9);
+            glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY + 2, -34.9);
+            glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY + 2, -34.9);
+            glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY - 2, -34.9);
+=======
 
         glBegin(GL_POLYGON);
             //glColor3f(splatterVec[i].color[0],splatterVec[i].color[1],splatterVec[i].color[2]);
@@ -347,6 +359,7 @@ void drawSplatters() {
             glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY + 2, -34);
             glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY + 2, -34);
             glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY - 2, -34);
+>>>>>>> fb1056ae10a3b8f5f29255cef07439b38928a268
         glEnd();
     }
 }
