@@ -155,6 +155,9 @@ void floor(){
     GLfloat dummaterialSpecFloor[4] = {0.0, 0.0, 0.0, 1.0};
     GLfloat dummaterialAmbFloor[4] = {1.0, 1.0, 1.0, 1.0};
     GLfloat dummaterialShinyFloor = 4.0;
+    GLfloat materialEmit[4]={0,0,0,1};
+
+    glMaterialfv(GL_FRONT, GL_EMISSION, materialEmit);
     //set material properties
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiffFloor);
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmbFloor);
@@ -176,7 +179,9 @@ void wall() {
     GLfloat dummaterialSpecWall[4] = {0, 0, 0, 0};
     GLfloat dummaterialAmbWall[4] = {1.0, 1.0, 1.0, 0};
     GLfloat dummaterialShinyWall = 4.0;
-    
+    GLfloat materialEmit[4]={0,0,0,1};
+
+    glMaterialfv(GL_FRONT, GL_EMISSION, materialEmit);
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiffWall);
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmbWall);
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, dummaterialShinyWall);
@@ -193,27 +198,25 @@ void wall() {
 
 //Draw a table which the shooter stands behind
 void drawTable() {
-<<<<<<< HEAD
 
-    GLfloat dummaterialDiff[3]={0.9,0.6,0.3};
-    GLfloat dummaterialSpec[4] = {0,0,0,0};
-    GLfloat dummaterialAmb[4] = {1,1,1,0};
-    GLfloat dummaterialShiny[] = {4};
+
+    GLfloat dummaterialDiffTable[3]={0.9,0.6,0.3};
+    GLfloat dummaterialSpecTable[4] = {0,0,0,0};
+    GLfloat dummaterialAmbTable[4] = {1,1,1,0};
+    GLfloat dummaterialShinyTable = 4;
+    GLfloat emitTable[4]={0,0,0,1};
+
     GLfloat ballDiff1[3]={1,0,0};
     GLfloat ballDiff2[3]={0,1,0};
     GLfloat ballDiff3[3]={0,0,1};
-    
-=======
-    GLfloat dummaterialDiffTable[4]={0.9, 0.6, 0.3, 0};
-    GLfloat dummaterialSpecTable[4] = {0.0, 0.0, 0.0, 0.0};
-    GLfloat dummaterialAmbTable[4] = {1.0 , 1.0, 1.0, 0};
-    GLfloat dummaterialShinyTable = 4.0;
->>>>>>> 5f1786d7fe6c02df016e18639cf454bb081d16c2
+    GLfloat ballEmit[4]={1,0,0,1};
+
     
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiffTable);
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmbTable);
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, dummaterialShinyTable);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecTable);
+    glMaterialfv(GL_FRONT, GL_EMISSION, emitTable);
 
     glBegin(GL_POLYGON);
     glNormal3f(0,1.0,0);
@@ -225,18 +228,24 @@ void drawTable() {
     glPushMatrix();
         //red ball
         glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, ballDiff1);
-        glTranslatef(0,7.25,42.5);
+        glTranslatef(-2,7.25,42.5);
+        if(paintBallColour[0]==1 and colourChanged){glMaterialfv(GL_FRONT, GL_EMISSION, ballEmit);}
+        else{glMaterialfv(GL_FRONT, GL_EMISSION, emitTable);}
         glutSolidSphere(.25, 7, 70);
     glPopMatrix();
     glPushMatrix();
         //green ball
         glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, ballDiff2);
-        glTranslatef(-2,7.25,42.5);
+        if(paintBallColour[1]==1 and colourChanged){glMaterialfv(GL_FRONT, GL_EMISSION, ballEmit);}
+        else{glMaterialfv(GL_FRONT, GL_EMISSION, emitTable);}
+        glTranslatef(0,7.25,42.5);
         glutSolidSphere(.25, 7, 70);
     glPopMatrix();
     glPushMatrix();
         //blue ball
         glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, ballDiff3);
+        if(paintBallColour[2]==1 and colourChanged){glMaterialfv(GL_FRONT, GL_EMISSION, ballEmit);}
+        else{glMaterialfv(GL_FRONT, GL_EMISSION, emitTable);}
         glTranslatef(2,7.25,42.5);
         glutSolidSphere(.25, 7, 70);
     glPopMatrix();
@@ -265,6 +274,8 @@ void drawTable() {
 //draw aiming point
 void drawCrossHair() {
     GLfloat dummaterialDiffCrossHair[4]={1,0,0,0};
+    GLfloat materialEmit[4]={0,0,0,1};
+    glMaterialfv(GL_FRONT, GL_EMISSION, materialEmit);
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiffCrossHair);
 
     glBegin(GL_LINES);
@@ -316,10 +327,10 @@ void drawSplatters() {
     GLfloat dummaterialSpecSplatter[4] = {0.0, 0.0, 0.0, 0.0};
     GLfloat dummaterialAmbSplatter[4] = {1.0, 1.0, 1.0, 0.0};
     GLfloat dummaterialShinySplatter = 4.0;
-    //glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiffSplatter);
-    // glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmbSplatter);
-    // glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, dummaterialShinySplatter);
-    // glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecSplatter);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiffSplatter);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmbSplatter);
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, dummaterialShinySplatter);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecSplatter);
 
     for(int i = splatterVec.size()-1; i >=0 ; i--) { 
         GLfloat dummaterialDiffSplatter[4]={splatterVec[i].color[0], splatterVec[i].color[1], splatterVec[i].color[2], 0};
@@ -327,7 +338,8 @@ void drawSplatters() {
         glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmbSplatter);
         glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, dummaterialShinySplatter);
         glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecSplatter);
-        
+
+
         glBegin(GL_POLYGON);
             //glColor3f(splatterVec[i].color[0],splatterVec[i].color[1],splatterVec[i].color[2]);
             glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY - 2, -34);
@@ -365,13 +377,13 @@ void drawPaintBalls(){
 
 
         if(colourChanged){
-            dummaterialDiff[0]=paintBallColour[0];
-            dummaterialDiff[1]=paintBallColour[1];
-            dummaterialDiff[2]=paintBallColour[2];
+            dummaterialDiffBall[0]=paintBallColour[0];
+            dummaterialDiffBall[1]=paintBallColour[1];
+            dummaterialDiffBall[2]=paintBallColour[2];
         }else{
-            dummaterialDiff[0]=paintBallVec[i].color[0];
-            dummaterialDiff[1]=paintBallVec[i].color[1];
-            dummaterialDiff[2]=paintBallVec[i].color[2];
+            dummaterialDiffBall[0]=paintBallVec[i].color[0];
+            dummaterialDiffBall[1]=paintBallVec[i].color[1];
+            dummaterialDiffBall[2]=paintBallVec[i].color[2];
         }
         
 
