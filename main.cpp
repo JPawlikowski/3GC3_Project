@@ -36,7 +36,7 @@ using namespace std;
 std::vector<Paintball> paintBallVec(0);
 std::vector<Splatter> splatterVec(0);
 //bool shot = false;
-bool reset = false;
+bool reset = true;
 int cnt = 0;
 bool axisToggle = false;
 
@@ -82,6 +82,11 @@ float tableCoords[4][3]={
     {-3, 7, 49}
 };
 
+//colour change
+bool colourChanged = false;
+float paintBallColour[3]={0,0,0};
+
+
 //material variables
 GLfloat materialAmbient[4] = {0,0,0,1};
 GLfloat materialSpecular[4] = {.5,.5,.5,1};
@@ -95,6 +100,10 @@ void instructions()
   cout<<"======================================="<<endl;
   cout<<"arrow keys : move crosshairs"  <<endl;
   cout<<"space : shoot paintball"<<endl;
+  cout<<"r : turn paintballs red"<<endl;
+  cout<<"g : turn paintballs green"<<endl;
+  cout<<"b : turn paintballs blue"<<endl;
+  cout<<"w : turn paintballs to random colours"<<endl;
 }
 
 //display shots fired on top of wall
@@ -146,6 +155,9 @@ void floor(){
     GLfloat dummaterialSpecFloor[4] = {0.0, 0.0, 0.0, 1.0};
     GLfloat dummaterialAmbFloor[4] = {1.0, 1.0, 1.0, 1.0};
     GLfloat dummaterialShinyFloor = 4.0;
+    GLfloat materialEmit[4]={0,0,0,1};
+
+    glMaterialfv(GL_FRONT, GL_EMISSION, materialEmit);
     //set material properties
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiffFloor);
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmbFloor);
@@ -167,7 +179,9 @@ void wall() {
     GLfloat dummaterialSpecWall[4] = {0, 0, 0, 0};
     GLfloat dummaterialAmbWall[4] = {1.0, 1.0, 1.0, 0};
     GLfloat dummaterialShinyWall = 4.0;
-    
+    GLfloat materialEmit[4]={0,0,0,1};
+
+    glMaterialfv(GL_FRONT, GL_EMISSION, materialEmit);
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiffWall);
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmbWall);
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, dummaterialShinyWall);
@@ -184,15 +198,25 @@ void wall() {
 
 //Draw a table which the shooter stands behind
 void drawTable() {
-    GLfloat dummaterialDiffTable[4]={0.9, 0.6, 0.3, 0};
-    GLfloat dummaterialSpecTable[4] = {0.0, 0.0, 0.0, 0.0};
-    GLfloat dummaterialAmbTable[4] = {1.0 , 1.0, 1.0, 0};
-    GLfloat dummaterialShinyTable = 4.0;
+
+
+    GLfloat dummaterialDiffTable[3]={0.9,0.6,0.3};
+    GLfloat dummaterialSpecTable[4] = {0,0,0,0};
+    GLfloat dummaterialAmbTable[4] = {1,1,1,0};
+    GLfloat dummaterialShinyTable = 4;
+    GLfloat emitTable[4]={0,0,0,1};
+
+    GLfloat ballDiff1[3]={1,0,0};
+    GLfloat ballDiff2[3]={0,1,0};
+    GLfloat ballDiff3[3]={0,0,1};
+    GLfloat ballEmit[4]={1,0,0,1};
+
     
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiffTable);
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmbTable);
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, dummaterialShinyTable);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecTable);
+    glMaterialfv(GL_FRONT, GL_EMISSION, emitTable);
 
     glBegin(GL_POLYGON);
     glNormal3f(0,1.0,0);
@@ -201,6 +225,35 @@ void drawTable() {
             glVertex3f(tableCoords[i][0],tableCoords[i][1],tableCoords[i][2]);
         }
     glEnd();
+    glPushMatrix();
+        //red ball
+        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, ballDiff1);
+        glTranslatef(-2,7.25,42.5);
+        if(paintBallColour[0]==1 and colourChanged){glMaterialfv(GL_FRONT, GL_EMISSION, ballEmit);}
+        else{glMaterialfv(GL_FRONT, GL_EMISSION, emitTable);}
+        glutSolidSphere(.25, 7, 70);
+    glPopMatrix();
+    glPushMatrix();
+        //green ball
+        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, ballDiff2);
+        if(paintBallColour[1]==1 and colourChanged){glMaterialfv(GL_FRONT, GL_EMISSION, ballEmit);}
+        else{glMaterialfv(GL_FRONT, GL_EMISSION, emitTable);}
+        glTranslatef(0,7.25,42.5);
+        glutSolidSphere(.25, 7, 70);
+    glPopMatrix();
+    glPushMatrix();
+        //blue ball
+        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, ballDiff3);
+        if(paintBallColour[2]==1 and colourChanged){glMaterialfv(GL_FRONT, GL_EMISSION, ballEmit);}
+        else{glMaterialfv(GL_FRONT, GL_EMISSION, emitTable);}
+        glTranslatef(2,7.25,42.5);
+        glutSolidSphere(.25, 7, 70);
+    glPopMatrix();
+    // {-3, 7, 42},
+    // {3, 7, 42},
+    // {3, 7, 49},
+    // {-3, 7, 49}
+
 }
 
 //draw x,y,z axis, useful for perspective and testing (OPTIONAL)
@@ -221,6 +274,8 @@ void drawTable() {
 //draw aiming point
 void drawCrossHair() {
     GLfloat dummaterialDiffCrossHair[4]={1,0,0,0};
+    GLfloat materialEmit[4]={0,0,0,1};
+    glMaterialfv(GL_FRONT, GL_EMISSION, materialEmit);
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiffCrossHair);
 
     glBegin(GL_LINES);
@@ -265,12 +320,22 @@ void drawCrossHair() {
 }
 
 //draw splatters on wall
+
+
 void drawSplatters() {
     GLfloat dummaterialDiffSplatter[4]={0.5, 0.2, 0.0, 0.0};
     GLfloat dummaterialSpecSplatter[4] = {0.0, 0.0, 0.0, 0.0};
     GLfloat dummaterialAmbSplatter[4] = {1.0, 1.0, 1.0, 0.0};
     GLfloat dummaterialShinySplatter = 4.0;
+<<<<<<< HEAD
     
+=======
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiffSplatter);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmbSplatter);
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, dummaterialShinySplatter);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecSplatter);
+
+>>>>>>> fb1056ae10a3b8f5f29255cef07439b38928a268
     for(int i = splatterVec.size()-1; i >=0 ; i--) { 
         GLfloat dummaterialDiffSplatter[4]={splatterVec[i].color[0], splatterVec[i].color[1], splatterVec[i].color[2], 0};
         glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiffSplatter);
@@ -278,12 +343,23 @@ void drawSplatters() {
         glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, dummaterialShinySplatter);
         glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecSplatter);
 
+<<<<<<< HEAD
         glBegin(GL_QUADS);
             glNormal3f(0.0,0.0,1.0);
             glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY - 2, -34.9);
             glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY + 2, -34.9);
             glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY + 2, -34.9);
             glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY - 2, -34.9);
+=======
+
+        glBegin(GL_POLYGON);
+            //glColor3f(splatterVec[i].color[0],splatterVec[i].color[1],splatterVec[i].color[2]);
+            glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY - 2, -34);
+            glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY - 2, -34);
+            glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY + 2, -34);
+            glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY + 2, -34);
+            glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY - 2, -34);
+>>>>>>> fb1056ae10a3b8f5f29255cef07439b38928a268
         glEnd();
     }
 }
@@ -311,10 +387,18 @@ void drawPaintBalls(){
     GLfloat dummaterialAmbBall[4] = {1.0, 1.0, 1.0, 1.0};
     GLfloat dummaterialShinyBall = 2.0;
     for(int i = 0; i < paintBallVec.size(); i++){
-        //materials reflecting random color from paintball class
-        dummaterialDiffBall[0]=paintBallVec[i].color[0];
-        dummaterialDiffBall[1]=paintBallVec[i].color[1];
-        dummaterialDiffBall[2]=paintBallVec[i].color[2];
+
+
+        if(colourChanged){
+            dummaterialDiffBall[0]=paintBallColour[0];
+            dummaterialDiffBall[1]=paintBallColour[1];
+            dummaterialDiffBall[2]=paintBallColour[2];
+        }else{
+            dummaterialDiffBall[0]=paintBallVec[i].color[0];
+            dummaterialDiffBall[1]=paintBallVec[i].color[1];
+            dummaterialDiffBall[2]=paintBallVec[i].color[2];
+        }
+        
 
         glPushMatrix();
             //set materials
@@ -403,13 +487,39 @@ void projection(){
 
 //react to users keyboard input
 void handleKeyboard(unsigned char key, int _x, int _y) {
+
     //close window
     if (key == 'q' or key == 'Q') {
         exit(0);
     }
-    //reset simulation
+    // //reset simulation
+    // if (key == 'r' or key == 'R') {
+    //     reset=true;
+    // }
+    //set paintballs to red
     if (key == 'r' or key == 'R') {
-        reset=true;
+        paintBallColour[0]=1;
+        paintBallColour[1]=0;
+        paintBallColour[2]=0;
+        colourChanged=true;
+    }
+    //set paintballs to green
+    if (key == 'g' or key == 'G') {
+        paintBallColour[0]=0;
+        paintBallColour[1]=1;
+        paintBallColour[2]=0;
+        colourChanged=true;
+    }
+    //set paintballs to blue
+    if (key == 'b' or key == 'B') {
+        paintBallColour[0]=0;
+        paintBallColour[1]=0;
+        paintBallColour[2]=1;
+        colourChanged=true;
+    }
+    //set paintballs to blue
+    if (key == 'w' or key == 'W') {
+        colourChanged=false;
     }
     //shootpaintball
     if (key == ' '){
