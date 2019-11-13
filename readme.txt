@@ -10,7 +10,8 @@ Paintball.cpp class and drawn with glutSolidSphere. The paintball splatters on t
 wall on wall and paintball collision and displays a square with the Splatter.cpp class. Both 
 splatters and paintballs are stored in vectors. Two lights have been enabled in the environment and
 material properties have been applied to the paintballs. We made firing more realistic in the way the
-crosshairs movement affects the location the paintball lands.
+crosshairs movement affects the location the paintball lands. Some buttons added include r, g, and b
+which will turn all paintballs to either red blue or green. 'w' will set the colours back to random
 
 For the final submission we will implement detailed splatters which will have dynamic
 shapes and blend colors (for overal splatters). We will also include a menu to change the paintball colours
