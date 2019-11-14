@@ -351,6 +351,7 @@ void drawSplatters() {
 //add to vector of splatters and remove from paintball vector, parameter is index of paintball vector for current hit
 void wallInteraction(int p) {
     Splatter S(paintBallVec[p].mX, paintBallVec[p].mY, paintBallVec[p].color);   //create new 'splatter'
+
     splatterVec.push_back(S);
     paintBallVec.erase(paintBallVec.begin()+p); //remove paintball
 }
@@ -359,6 +360,11 @@ void wallInteraction(int p) {
 void shootPaintBall(){
     shotsFired+=1;
     Paintball P(crossHairPos[0]*10, crossHairPos[1], crossHairPos[2]);
+    if(colourChanged){
+            P.color[0]=paintBallColour[0];
+            P.color[1]=paintBallColour[1];
+            P.color[2]=paintBallColour[2];
+    }
     paintBallVec.push_back(P);
 }
 
@@ -372,15 +378,11 @@ void drawPaintBalls(){
     for(int i = 0; i < paintBallVec.size(); i++){
 
 
-        if(colourChanged){
-            dummaterialDiffBall[0]=paintBallColour[0];
-            dummaterialDiffBall[1]=paintBallColour[1];
-            dummaterialDiffBall[2]=paintBallColour[2];
-        }else{
-            dummaterialDiffBall[0]=paintBallVec[i].color[0];
-            dummaterialDiffBall[1]=paintBallVec[i].color[1];
-            dummaterialDiffBall[2]=paintBallVec[i].color[2];
-        }
+        
+        dummaterialDiffBall[0]=paintBallVec[i].color[0];
+        dummaterialDiffBall[1]=paintBallVec[i].color[1];
+        dummaterialDiffBall[2]=paintBallVec[i].color[2];
+        
         
 
         glPushMatrix();
