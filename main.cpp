@@ -100,11 +100,12 @@ void instructions()
   cout<<"w : turn paintballs to random colours"<<endl;
 }
 
+//temporarily removed from program
 //display shots fired on top of wall
 void textDisplay()
 { 
   //set properties of text
-  GLfloat dummaterialDiff[4]={.2,.8,.4,0};
+  //GLfloat dummaterialDiff[4]={.2,.8,.4,0};
   //glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiff);
   
   //get length of shotsFired variable
@@ -134,7 +135,8 @@ void textDisplay()
  }
       
   glRasterPos3f(-6, 25,0);
-  int len  = (int)strlen(output);
+  //int len  = (int)strlen(output); //issue on gpu1, temporarily removed
+  int len = 0;
 
   for (int i = 0; i < len; i++) {
     glutBitmapCharacter(GLUT_BITMAP_9_BY_15, output[i]);
@@ -239,19 +241,19 @@ void drawTable() {
 }
 
 //draw x,y,z axis, useful for perspective and testing (OPTIONAL)
-// void drawAxis() {
-//     glBegin(GL_LINES);
-//         glColor3f(1, 0, 0);
-//         glVertex3f(0,0,0);
-//         glVertex3f(50,0,0);
-//         glColor3f(0,1,0);
-//         glVertex3f(0,0,0);
-//         glVertex3f(0,50,0);
-//         glColor3f(0,0,1);
-//         glVertex3f(0,0,0);
-//         glVertex3f(0,0,50);
-//     glEnd();
-// }
+void drawAxis() {
+    glBegin(GL_LINES);
+        glColor3f(1, 0, 0);
+        glVertex3f(0,0,0);
+        glVertex3f(50,0,0);
+        glColor3f(0,1,0);
+        glVertex3f(0,0,0);
+        glVertex3f(0,50,0);
+        glColor3f(0,0,1);
+        glVertex3f(0,0,0);
+        glVertex3f(0,0,50);
+    glEnd();
+}
 
 //draw aiming point
 void drawCrossHair() {
@@ -301,11 +303,9 @@ void drawCrossHair() {
 }
 
 //draw splatters on wall
-
-
 void drawSplatters() {
     GLfloat dummaterialDiffSplatter[4]={0.5, 0.2, 0.0, 0.0};
-    GLfloat dummaterialSpecSplatter[4] = {0.0, 0.0, 0.0, 0.0};
+    GLfloat dummaterialSpecSplatter[4]={0.0, 0.0, 0.0, 0.0};
     GLfloat dummaterialAmbSplatter[4] = {1.0, 1.0, 1.0, 0.0};
     GLfloat dummaterialShinySplatter = 4.0;
     
@@ -316,15 +316,12 @@ void drawSplatters() {
         glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, dummaterialShinySplatter);
         glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecSplatter);
 
-
-
         glBegin(GL_QUADS);
             glNormal3f(0.0,0.0,1.0);
             glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY - 2, -34.9);
             glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY + 2, -34.9);
             glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY + 2, -34.9);
             glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY - 2, -34.9);
-
         glEnd();
     }
 }
@@ -332,7 +329,6 @@ void drawSplatters() {
 //add to vector of splatters and remove from paintball vector, parameter is index of paintball vector for current hit
 void wallInteraction(int p) {
     Splatter S(paintBallVec[p].mX, paintBallVec[p].mY, paintBallVec[p].color);   //create new 'splatter'
-
     splatterVec.push_back(S);
     paintBallVec.erase(paintBallVec.begin()+p); //remove paintball
 }
@@ -367,7 +363,6 @@ void drawPaintBalls(){
             dummaterialDiffBall[2]=paintBallVec[i].color[2];
         }
 
-        
         glPushMatrix();
             //set materials
             glMaterialfv(GL_FRONT, GL_DIFFUSE, dummaterialDiffBall);
@@ -448,10 +443,6 @@ void handleKeyboard(unsigned char key, int _x, int _y) {
     if (key == 'q' or key == 'Q') {
         exit(0);
     }
-    // //reset simulation
-    // if (key == 'r' or key == 'R') {
-    //     reset=true;
-    // }
     //set paintballs to red
     if (key == 'r' or key == 'R') {
         paintBallColour[0]=1;
