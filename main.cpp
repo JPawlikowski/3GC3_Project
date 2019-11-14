@@ -8,11 +8,6 @@
 #include "Splatter.h"
 #include <vector>
 #include <string>
-
-//********
-#define KEY_UP 72
-#define KEY_DOWN 80
-
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -86,7 +81,6 @@ float tableCoords[4][3]={
 bool colourChanged = false;
 float paintBallColour[3]={0,0,0};
 
-
 //material variables
 GLfloat materialAmbient[4] = {0,0,0,1};
 GLfloat materialSpecular[4] = {.5,.5,.5,1};
@@ -137,9 +131,8 @@ void textDisplay()
             i++;
         }
     }
-    }
+ }
       
-  //glColor3f( 0, 0, 0 );
   glRasterPos3f(-6, 25,0);
   int len  = (int)strlen(output);
 
@@ -166,7 +159,6 @@ void floor(){
 
     //draw floor
     glBegin(GL_POLYGON);
-    //glColor3f(0,0.5,.5);
     glNormal3f(0.0,1.0,0.0);
     for(int i=0;i<4;i++){
         glVertex3f(floorCoord[i][0],floorCoord[i][1],floorCoord[i][2]);
@@ -189,7 +181,6 @@ void wall() {
 
     glBegin(GL_QUADS);
         glNormal3f(0.0,0.0,1.0);
-        //glColor3f(1, 1, 0);
         for(int i=0;i<4;i++){
             glVertex3f(wallCoords[i][0], wallCoords[i][1], wallCoords[i][2]);
         }
@@ -198,8 +189,6 @@ void wall() {
 
 //Draw a table which the shooter stands behind
 void drawTable() {
-
-
     GLfloat dummaterialDiffTable[3]={0.9,0.6,0.3};
     GLfloat dummaterialSpecTable[4] = {0,0,0,0};
     GLfloat dummaterialAmbTable[4] = {1,1,1,0};
@@ -210,7 +199,6 @@ void drawTable() {
     GLfloat ballDiff2[3]={0,1,0};
     GLfloat ballDiff3[3]={0,0,1};
     GLfloat ballEmit[4]={1,0,0,1};
-
     
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiffTable);
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmbTable);
@@ -220,7 +208,6 @@ void drawTable() {
 
     glBegin(GL_POLYGON);
     glNormal3f(0,1.0,0);
-        //glColor3f(0.9,0.6,0.3);
         for(int i=0;i<4;i++){
             glVertex3f(tableCoords[i][0],tableCoords[i][1],tableCoords[i][2]);
         }
@@ -249,11 +236,6 @@ void drawTable() {
         glTranslatef(2,7.25,42.5);
         glutSolidSphere(.25, 7, 70);
     glPopMatrix();
-    // {-3, 7, 42},
-    // {3, 7, 42},
-    // {3, 7, 49},
-    // {-3, 7, 49}
-
 }
 
 //draw x,y,z axis, useful for perspective and testing (OPTIONAL)
@@ -279,7 +261,6 @@ void drawCrossHair() {
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiffCrossHair);
 
     glBegin(GL_LINES);
-        //glColor3f(1,0,0);
         glVertex3f(crossHairPos[0] - 0.1, crossHairPos[1], crossHairPos[2]);
         glVertex3f(crossHairPos[0] + 0.1, crossHairPos[1], crossHairPos[2]);
 
@@ -327,15 +308,7 @@ void drawSplatters() {
     GLfloat dummaterialSpecSplatter[4] = {0.0, 0.0, 0.0, 0.0};
     GLfloat dummaterialAmbSplatter[4] = {1.0, 1.0, 1.0, 0.0};
     GLfloat dummaterialShinySplatter = 4.0;
-<<<<<<< HEAD
     
-=======
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiffSplatter);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmbSplatter);
-    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, dummaterialShinySplatter);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecSplatter);
-
->>>>>>> fb1056ae10a3b8f5f29255cef07439b38928a268
     for(int i = splatterVec.size()-1; i >=0 ; i--) { 
         GLfloat dummaterialDiffSplatter[4]={splatterVec[i].color[0], splatterVec[i].color[1], splatterVec[i].color[2], 0};
         glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiffSplatter);
@@ -343,23 +316,13 @@ void drawSplatters() {
         glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, dummaterialShinySplatter);
         glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecSplatter);
 
-<<<<<<< HEAD
         glBegin(GL_QUADS);
             glNormal3f(0.0,0.0,1.0);
             glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY - 2, -34.9);
             glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY + 2, -34.9);
             glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY + 2, -34.9);
             glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY - 2, -34.9);
-=======
 
-        glBegin(GL_POLYGON);
-            //glColor3f(splatterVec[i].color[0],splatterVec[i].color[1],splatterVec[i].color[2]);
-            glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY - 2, -34);
-            glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY - 2, -34);
-            glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY + 2, -34);
-            glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY + 2, -34);
-            glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY - 2, -34);
->>>>>>> fb1056ae10a3b8f5f29255cef07439b38928a268
         glEnd();
     }
 }
@@ -387,8 +350,6 @@ void drawPaintBalls(){
     GLfloat dummaterialAmbBall[4] = {1.0, 1.0, 1.0, 1.0};
     GLfloat dummaterialShinyBall = 2.0;
     for(int i = 0; i < paintBallVec.size(); i++){
-
-
         if(colourChanged){
             dummaterialDiffBall[0]=paintBallColour[0];
             dummaterialDiffBall[1]=paintBallColour[1];
@@ -399,7 +360,6 @@ void drawPaintBalls(){
             dummaterialDiffBall[2]=paintBallVec[i].color[2];
         }
         
-
         glPushMatrix();
             //set materials
             glMaterialfv(GL_FRONT, GL_DIFFUSE, dummaterialDiffBall);
@@ -407,10 +367,9 @@ void drawPaintBalls(){
             glMaterialf(GL_FRONT, GL_SHININESS, dummaterialShinyBall);
             glMaterialfv(GL_FRONT, GL_SPECULAR, dummaterialSpecBall);
         
-            //glColor3f(paintBallVec[i].color[0], paintBallVec[i].color[1], paintBallVec[i].color[2]);
             paintBallVec[i].mZ = paintBallVec[i].mZ - paintBallVec[i].speed;    //"-" because shooting 'down' range
             glTranslatef(paintBallVec[i].mX, paintBallVec[i].mY, paintBallVec[i].mZ);
-        
+
             if (paintBallVec[i].mZ <= -35 and paintBallVec[i].mX<15 
             and paintBallVec[i].mX>-15 and paintBallVec[i].mY<20 and paintBallVec[i].mY>0) {    //hit wall
                 wallInteraction(i);
@@ -436,27 +395,16 @@ void display(void) {
         reset = false;
     }
 
-    //enable lighting
-    // glEnable(GL_LIGHTING);
-    // glEnable(GL_LIGHT0); 
-    // glEnable(GL_LIGHT1);
-    // // LIGHTING, SET CHANNELS 
-
     for (unsigned int j = 0; j < 2; j++) {
         glLightfv(GL_LIGHT0 +j, GL_POSITION, lightPos[j]);
         glLightfv(GL_LIGHT0 +j, GL_AMBIENT, amb);
         glLightfv(GL_LIGHT0 +j, GL_DIFFUSE, diff);
         glLightfv(GL_LIGHT0 +j, GL_SPECULAR, spec);
     }   
-    // glLightfv(GL_LIGHT0, GL_POSITION, lightPos[0]);
-    // glLightfv(GL_LIGHT0, GL_AMBIENT, amb);
-    // glLightfv(GL_LIGHT0, GL_DIFFUSE, diff);
-    // glLightfv(GL_LIGHT0, GL_SPECULAR, spec);
 
-
-    // if (axisToggle == true){
-    //     drawAxis();
-    // }
+    if (axisToggle == true){
+        drawAxis();
+    }
 
     //textDisplay();
 
@@ -523,7 +471,6 @@ void handleKeyboard(unsigned char key, int _x, int _y) {
     }
     //shootpaintball
     if (key == ' '){
-        // cout<<"shot"<<endl;
         shootPaintBall();
     }
     //toggle x, y, z axis display
@@ -547,20 +494,20 @@ void handleSpecialKeyboard(int key, int _x, int _y) {
     }
 }
 
-void OnMouseClick(int button, int state, int x, int y) {
-    //shoot paintball with mouse temporarily removed, spacebar instead
-    // if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-    //     shootPaintBall();
-    // }
+//no mouse driven interaction for now
+// void OnMouseClick(int button, int state, int x, int y) {
+//     //shoot paintball with mouse temporarily removed, spacebar instead
+//     // if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+//     //     shootPaintBall();
+//     // }
 
-    if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
-        //empty for now
-    }
+//     if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
+//         //empty for now
+//     }
 
-}
+// }
 
 int main(int argc, char** argv) {
-
 	glutInit(&argc, argv);     //starts up GLUT
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
     //create window
@@ -569,21 +516,18 @@ int main(int argc, char** argv) {
     glutCreateWindow("Paintball Range");  //creates the window
     
     //enable Z buffer test, otherwise things appear in the order they're drawn
-    
+    //enable lighting with 2 lights
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0); 
     glEnable(GL_LIGHT1);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
 
-    //glEnable(GL_CULL_FACE);
-    //glCullFace(GL_BACK);
-    //glShadeModel(GL_SMOOTH);
     projection();
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_NORMALIZE);
 
-    glutMouseFunc(OnMouseClick);
+    //glutMouseFunc(OnMouseClick);
     glutKeyboardFunc(handleKeyboard);
     glutSpecialFunc(handleSpecialKeyboard);
     glutDisplayFunc(display);
