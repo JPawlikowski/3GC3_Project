@@ -148,7 +148,7 @@ void floor(){
     GLfloat dummaterialSpecFloor[4] = {0.0, 0.0, 0.0, 1.0};
     GLfloat dummaterialAmbFloor[4] = {1.0, 1.0, 1.0, 1.0};
     GLfloat dummaterialShinyFloor = 4.0;
-    GLfloat materialEmit[4]={0,0,0,1};
+    GLfloat materialEmit[4]={0,0,0,0};
 
     glMaterialfv(GL_FRONT, GL_EMISSION, materialEmit);
     //set material properties
@@ -171,7 +171,7 @@ void wall() {
     GLfloat dummaterialSpecWall[4] = {0, 0, 0, 0};
     GLfloat dummaterialAmbWall[4] = {1.0, 1.0, 1.0, 0};
     GLfloat dummaterialShinyWall = 4.0;
-    GLfloat materialEmit[4]={0,0,0,1};
+    GLfloat materialEmit[4]={0,0,0,0};
 
     glMaterialfv(GL_FRONT, GL_EMISSION, materialEmit);
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiffWall);
@@ -193,7 +193,7 @@ void drawTable() {
     GLfloat dummaterialSpecTable[4] = {0,0,0,0};
     GLfloat dummaterialAmbTable[4] = {1,1,1,0};
     GLfloat dummaterialShinyTable = 4;
-    GLfloat emitTable[4]={0,0,0,1};
+    GLfloat emitTable[4]={0,0,0,0};
 
     GLfloat ballDiff1[3]={1,0,0};
     GLfloat ballDiff2[3]={0,1,0};
@@ -316,6 +316,8 @@ void drawSplatters() {
         glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, dummaterialShinySplatter);
         glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecSplatter);
 
+
+
         glBegin(GL_QUADS);
             glNormal3f(0.0,0.0,1.0);
             glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY - 2, -34.9);
@@ -330,15 +332,20 @@ void drawSplatters() {
 //add to vector of splatters and remove from paintball vector, parameter is index of paintball vector for current hit
 void wallInteraction(int p) {
     Splatter S(paintBallVec[p].mX, paintBallVec[p].mY, paintBallVec[p].color);   //create new 'splatter'
+
     splatterVec.push_back(S);
     paintBallVec.erase(paintBallVec.begin()+p); //remove paintball
 }
 
 //shooting a paintball ads it to the vector
 void shootPaintBall(){
-    ::shotsFired;
     shotsFired+=1;
     Paintball P(crossHairPos[0]*10, crossHairPos[1], crossHairPos[2]);
+    if(colourChanged){
+            P.color[0]=paintBallColour[0];
+            P.color[1]=paintBallColour[1];
+            P.color[2]=paintBallColour[2];
+    }
     paintBallVec.push_back(P);
 }
 
@@ -359,6 +366,7 @@ void drawPaintBalls(){
             dummaterialDiffBall[1]=paintBallVec[i].color[1];
             dummaterialDiffBall[2]=paintBallVec[i].color[2];
         }
+
         
         glPushMatrix();
             //set materials
