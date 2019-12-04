@@ -297,7 +297,7 @@ void drawCrossHair() {
         float y = r * sinf(theta)+crossHairPos[1];
         float z=crossHairPos[2];
 
-        glVertex3f(x , y ,z); //output vertex
+        glVertex3f(x ,y ,z); //output vertex
     }
     glEnd();
 }
@@ -371,14 +371,40 @@ void drawPaintBalls(){
             glMaterialfv(GL_FRONT, GL_SPECULAR, dummaterialSpecBall);
         
             paintBallVec[i].mZ = paintBallVec[i].mZ - paintBallVec[i].speed;    //"-" because shooting 'down' range
+            
+            //altering height of paintball
+            //increase heigtht to maximum of 14, then decrease height till it hits the wall
+            if(paintBallVec[i].mY<14){
+                if(paintBallVec[i].mY>12){
+                    paintBallVec[i].mY +=.05;
+                }else{
+                    paintBallVec[i].mY +=.1;
+                }
+                
+            }else{
+                if(paintBallVec[i].mY <12){
+                    paintBallVec[i].mY -= .1;
+                }else{
+                    paintBallVec[i].mY -= .2;
+                }
+
+            }
+
+
             glTranslatef(paintBallVec[i].mX, paintBallVec[i].mY, paintBallVec[i].mZ);
 
             if (paintBallVec[i].mZ <= -35 and paintBallVec[i].mX<15 
             and paintBallVec[i].mX>-15 and paintBallVec[i].mY<20 and paintBallVec[i].mY>0) {    //hit wall
                 wallInteraction(i);
             }
-         
-            glutSolidSphere(1, 100, 100);
+            
+            //if ball hits the floor
+            if(paintBallVec[i].mY<=0){
+                continue;
+            }else{
+                glutSolidSphere(1, 100, 100);
+            }
+            
         glPopMatrix();
      }
 }
