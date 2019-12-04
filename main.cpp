@@ -31,9 +31,13 @@ using namespace std;
 std::vector<Paintball> paintBallVec(0);
 std::vector<Splatter> splatterVec(0);
 //bool shot = false;
-bool reset = true;
 int cnt = 0;
+
+//toggles
+bool reset = true;
 bool axisToggle = false;
+//false = use keyboard, true = arrows
+bool crossHairToggle = true;
 
 //total shots fired
 float shotsFired=0;
@@ -71,10 +75,10 @@ float wallCoords[4][3]={
 };
 
 float tableCoords[4][3]={
-    {-3, 7, 42},
-    {3, 7, 42},
-    {3, 7, 49},
-    {-3, 7, 49}
+    {-8, 7, 42},
+    {8, 7, 42},
+    {8, 7, 49},
+    {-8, 7, 49}
 };
 
 //colour change
@@ -98,6 +102,7 @@ void instructions()
   cout<<"g : turn paintballs green"<<endl;
   cout<<"b : turn paintballs blue"<<endl;
   cout<<"w : turn paintballs to random colours"<<endl;
+  cout<<"c : switch between mouse or arrow keys for cursor position"<<endl;
 }
 
 //temporarily removed from program
@@ -336,7 +341,7 @@ void wallInteraction(int p) {
 //shooting a paintball ads it to the vector
 void shootPaintBall(){
     shotsFired+=1;
-    Paintball P(crossHairPos[0]*10, crossHairPos[1], crossHairPos[2]);
+    Paintball P(crossHairPos[0], crossHairPos[1], crossHairPos[2]);
     if(colourChanged){
             P.color[0]=paintBallColour[0];
             P.color[1]=paintBallColour[1];
@@ -417,6 +422,12 @@ void display(void) {
 
     drawTable();
 
+    //scrap this for now
+    //use mouse position as cursor position
+    // if (crossHairToggle == false) {
+    //     crossHairPos
+    // }
+
     drawCrossHair();
 
     drawPaintBalls();
@@ -473,38 +484,86 @@ void handleKeyboard(unsigned char key, int _x, int _y) {
         shootPaintBall();
     }
     //toggle x, y, z axis display
-    if (key == 'a' || key == 'A'){
+    if (key == 'x' || key == 'X'){
         axisToggle = !axisToggle;
     }
+    if (key == 'c' || key == 'C'){
+        crossHairToggle = !crossHairToggle;
+    }
+
+    //move character position
+    //move left
+    if (key == 'a' || key == 'A'){
+        if (eye[0] >= -8) {
+            eye[0] = eye[0] - 0.2;
+            //keep cross Hair centered
+            crossHairPos[0] = crossHairPos[0] - 0.2;
+        }
+    }
+    //move right
+    if (key == 'd' || key == 'D'){
+        if (eye[0] <= 8) {
+            eye[0] = eye[0] + 0.2;
+            crossHairPos[0] = crossHairPos[0] + 0.2;
+        }
+    }
+    //motion front and back might not be worth it but can try
+    // if (key == 'w' || key == 'W'){
+    //     //move forward (set a limit for how far can go)
+    // }
+
 }
 void handleSpecialKeyboard(int key, int _x, int _y) {
     //crosshair position
-    if(key==GLUT_KEY_LEFT){
-        crossHairPos[0] = crossHairPos[0] - 0.05;
+    //Note: crosshair shouldnt move beyond field of view
+    if (crossHairToggle) {
+        if(key==GLUT_KEY_LEFT){
+            if (crossHairPos[0] >= (eye[0] - 1)) {
+                crossHairPos[0] = crossHairPos[0] - 0.05;
+            }
+        }
+        if(key==GLUT_KEY_RIGHT){
+            if (crossHairPos[0] <= (eye[0] + 1)) {
+                crossHairPos[0] = crossHairPos[0] + 0.05;
+            }
+        }
+        if(key == GLUT_KEY_UP){
+            if (crossHairPos[1] <= (eye[1]+1)) {
+                crossHairPos[1] = crossHairPos[1] + 0.05;
+            }
+        }
+        if(key == GLUT_KEY_DOWN){
+            if (crossHairPos[1] >= (eye[1]-1)) {
+                crossHairPos[1] = crossHairPos[1] - 0.05;
+            }
+        }
     }
-    if(key==GLUT_KEY_RIGHT){
-        crossHairPos[0] = crossHairPos[0] + 0.05;
-    }
-    if(key == GLUT_KEY_UP){
-        crossHairPos[1] = crossHairPos[1] + 0.05;
-    }
-    if(key == GLUT_KEY_DOWN){
-        crossHairPos[1] = crossHairPos[1] - 0.05;
-    }
+    // } else {
+    //     float ox = (_x - 450) * 80.0 / 400;
+    //     float oy = (450 - _y) * 80.0 / 400;
+    //     crossHairPos[0] = ox;
+    //     crossHairPos[1] = oy;
+    //     cout << crossHairPos[0] << endl;
+    // }
 }
 
 //no mouse driven interaction for now
-// void OnMouseClick(int button, int state, int x, int y) {
-//     //shoot paintball with mouse temporarily removed, spacebar instead
-//     // if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-//     //     shootPaintBall();
-//     // }
+void OnMouseClick(int button, int state, int x, int y) {
+    //shoot paintball with mouse temporarily removed, spacebar instead
+    // if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+    //     shootPaintBall();
+    // }
 
-//     if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
-//         //empty for now
-//     }
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+        float ox = (x - 450) * 80.0 / 400;
+        float oy = (450 - y) * 80.0 / 400;
+        crossHairPos[0] = ox;
+        crossHairPos[1] = oy;
+        cout << crossHairPos[0] << endl;
+        //cout << "mina" << endl;
+    }
 
-// }
+}
 
 int main(int argc, char** argv) {
 	glutInit(&argc, argv);     //starts up GLUT
@@ -529,6 +588,7 @@ int main(int argc, char** argv) {
     //glutMouseFunc(OnMouseClick);
     glutKeyboardFunc(handleKeyboard);
     glutSpecialFunc(handleSpecialKeyboard);
+    glutMouseFunc(OnMouseClick);
     glutDisplayFunc(display);
     // PlaySound("35 - Lost Woods.wav", NULL, SND_SYNC);
 
