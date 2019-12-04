@@ -448,12 +448,6 @@ void display(void) {
 
     drawTable();
 
-    //scrap this for now
-    //use mouse position as cursor position
-    // if (crossHairToggle == false) {
-    //     crossHairPos
-    // }
-
     drawCrossHair();
 
     drawPaintBalls();
@@ -515,6 +509,11 @@ void handleKeyboard(unsigned char key, int _x, int _y) {
     }
     if (key == 'c' || key == 'C'){
         crossHairToggle = !crossHairToggle;
+        if (crossHairToggle == true) {
+            cout << "Switched to arrow-key controlled crosshair!" << endl;
+        } else {
+            cout << "Switched to mouse controlled crosshair!" << endl;
+        }
     }
 
     //move character position
@@ -542,7 +541,9 @@ void handleKeyboard(unsigned char key, int _x, int _y) {
 void handleSpecialKeyboard(int key, int _x, int _y) {
     //crosshair position
     //Note: crosshair shouldnt move beyond field of view
+
     if (crossHairToggle) {
+        cout << "cross hair pos : " << crossHairPos[0] << " " << crossHairPos[1] << endl;
         if(key==GLUT_KEY_LEFT){
             if (crossHairPos[0] >= (eye[0] - 1)) {
                 crossHairPos[0] = crossHairPos[0] - 0.05;
@@ -564,13 +565,6 @@ void handleSpecialKeyboard(int key, int _x, int _y) {
             }
         }
     }
-    // } else {
-    //     float ox = (_x - 450) * 80.0 / 400;
-    //     float oy = (450 - _y) * 80.0 / 400;
-    //     crossHairPos[0] = ox;
-    //     crossHairPos[1] = oy;
-    //     cout << crossHairPos[0] << endl;
-    // }
 }
 
 //no mouse driven interaction for now
@@ -580,15 +574,50 @@ void OnMouseClick(int button, int state, int x, int y) {
     //     shootPaintBall();
     // }
 
+    //look over this again might toss it
     if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-        float ox = (x - 450) * 80.0 / 400;
-        float oy = (450 - y) * 80.0 / 400;
-        crossHairPos[0] = ox;
-        crossHairPos[1] = oy;
-        cout << crossHairPos[0] << endl;
-        //cout << "mina" << endl;
+        //float ox = (x - 450) * 80.0 / 400;
+        //float oy = (450 - y) * 80.0 / 400;
+        // cout << "cross hair pos : " << crossHairPos[0] << " " << crossHairPos[1] << endl;
+        // float ox = (x/250 - 1.0);
+        // int oy = -1 * (y/250 - 1);
+        // crossHairPos[0] = (float)ox;
+        // crossHairPos[1] = 11 ;
+        cout << "new crosshairpos : " << crossHairPos[0] << " " << crossHairPos[1] << endl;
     }
+}
 
+void motion(int x, int y) {
+    if (crossHairToggle == false) { 
+        //only move crosshair within visible region
+        //NOTE: change this to work for dynamic screensize somehow
+        float ox = (float)(x)/250.0;
+        float oy = (float)(y)/250.0;
+        float adjX;
+        float adjY;
+        if (x <= 250) {
+            adjX = -1.0 * (1.0 - ox);
+            crossHairPos[0] = adjX;
+        }
+        if (x > 250) {
+            adjX = ox - 1.0;
+            crossHairPos[0] = adjX;
+        }
+        if (y <= 250) {
+            adjY = (1.0 - oy);
+            crossHairPos[1] = 10 + adjY; //vertical offset
+        }
+        if (y > 250) {
+            adjY = -1.0 * (oy - 1.0);
+            crossHairPos[1] = 10 + adjY;
+        }
+        
+        //for debugging
+        // cout << "x, y : " << x << " " << y << endl;
+        // cout << "ox , oy : " << ox << " " << oy << endl;
+        // cout << "adjX, adjY : " << adjX << " " << adjY << endl;
+
+    }
 }
 
 int main(int argc, char** argv) {
@@ -614,7 +643,8 @@ int main(int argc, char** argv) {
     //glutMouseFunc(OnMouseClick);
     glutKeyboardFunc(handleKeyboard);
     glutSpecialFunc(handleSpecialKeyboard);
-    glutMouseFunc(OnMouseClick);
+    //glutMouseFunc(OnMouseClick);
+    glutPassiveMotionFunc(motion);
     glutDisplayFunc(display);
     // PlaySound("35 - Lost Woods.wav", NULL, SND_SYNC);
 
