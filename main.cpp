@@ -36,8 +36,9 @@ int cnt = 0;
 //toggles
 bool reset = true;
 bool axisToggle = false;
-//false = use keyboard, true = arrows
-bool crossHairToggle = true;
+//false = mouse, true = arrowKey
+//maybe change the default to mouse later****
+bool keyboardMouseToggle = true;
 
 //total shots fired
 float shotsFired=0;
@@ -47,7 +48,7 @@ float crossHairPos[3] = {0, 9, 47};
 
 // One light for now
 float lightPos[2][4] = {
-    { 5, 20, 0, 1 },
+    { 0, 20, 0, 1 },
     { -5, 20, 0, 1 }
 };
 
@@ -57,7 +58,7 @@ float eye[3] = {0, 10, 50};
 //some basic lighting characteristics
 float amb[4] = {0,0,0,0};
 float spec[4] = {1,1,1,1};
-float diff[4] = {0.7,0.7,0.7,1};
+float diff[4] = {1,1,1,1};
 
 //Floor map coordinates
 float floorCoord[4][3]={
@@ -154,7 +155,7 @@ void floor(){
     GLfloat dummaterialDiffFloor[4]={0.2, 0.8, 0.4, 1.0};
     GLfloat dummaterialSpecFloor[4] = {0.0, 0.0, 0.0, 1.0};
     GLfloat dummaterialAmbFloor[4] = {1.0, 1.0, 1.0, 1.0};
-    GLfloat dummaterialShinyFloor = 4.0;
+    GLfloat dummaterialShinyFloor = 10.0;
     GLfloat materialEmit[4]={0,0,0,0};
 
     glMaterialfv(GL_FRONT, GL_EMISSION, materialEmit);
@@ -174,7 +175,7 @@ void floor(){
 }
 //Draw the wall which will be shot at
 void wall() {
-    GLfloat dummaterialDiffWall[4]={0.5, .2, 0.0, 0.0};
+    GLfloat dummaterialDiffWall[4]={0.5, 0.2, 0.0, 0.0};
     GLfloat dummaterialSpecWall[4] = {0, 0, 0, 0};
     GLfloat dummaterialAmbWall[4] = {1.0, 1.0, 1.0, 0};
     GLfloat dummaterialShinyWall = 4.0;
@@ -309,17 +310,32 @@ void drawCrossHair() {
 
 //draw splatters on wall
 void drawSplatters() {
-    GLfloat dummaterialDiffSplatter[4]={0.5, 0.2, 0.0, 0.0};
-    GLfloat dummaterialSpecSplatter[4]={0.0, 0.0, 0.0, 0.0};
-    GLfloat dummaterialAmbSplatter[4] = {1.0, 1.0, 1.0, 0.0};
+    GLfloat dummaterialDiffSplatter[4]={0.5, 0.2, 0.0, 1.0};
+    GLfloat dummaterialSpecSplatter[4]={0.0, 0.0, 0.0, 1.0};
+    GLfloat dummaterialAmbSplatter[4] = {1.0, 1.0, 1.0, 1.0};
     GLfloat dummaterialShinySplatter = 4.0;
     
     for(int i = splatterVec.size()-1; i >=0 ; i--) { 
-        GLfloat dummaterialDiffSplatter[4]={splatterVec[i].color[0], splatterVec[i].color[1], splatterVec[i].color[2], 0};
+        GLfloat dummaterialDiffSplatter[4]={splatterVec[i].color[0], splatterVec[i].color[1], splatterVec[i].color[2], 1};
         glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiffSplatter);
         glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmbSplatter);
         glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, dummaterialShinySplatter);
         glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecSplatter);
+
+        //splatter shaoe, wash rn
+        // glBegin(GL_POLYGON);
+        //     glNormal3f(0.0, 0.0, 1.0);
+        //     glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY - 2, -34.9);
+        //     glVertex3f(splatterVec[i].mX - 1, splatterVec[i].mY , -34.9);
+        //     glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY + 2, -34.9);
+        //     glVertex3f(splatterVec[i].mX , splatterVec[i].mY + 1, -34.9);
+        //     glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY + 2, -34.9);
+        //     glVertex3f(splatterVec[i].mX + 1, splatterVec[i].mY , -34.9);
+        //     glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY - 2, -34.9);
+        //     glVertex3f(splatterVec[i].mX , splatterVec[i].mY - 1, -34.9);
+        //     glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY - 2, -34.9);
+
+        // glEnd();
 
         glBegin(GL_QUADS);
             glNormal3f(0.0,0.0,1.0);
@@ -395,7 +411,6 @@ void drawPaintBalls(){
 
             }
 
-
             glTranslatef(paintBallVec[i].mX, paintBallVec[i].mY, paintBallVec[i].mZ);
 
             if (paintBallVec[i].mZ <= -35 and paintBallVec[i].mX<15 
@@ -429,7 +444,7 @@ void display(void) {
         reset = false;
     }
 
-    for (unsigned int j = 0; j < 2; j++) {
+    for (unsigned int j = 0; j < 1; j++) {
         glLightfv(GL_LIGHT0 +j, GL_POSITION, lightPos[j]);
         glLightfv(GL_LIGHT0 +j, GL_AMBIENT, amb);
         glLightfv(GL_LIGHT0 +j, GL_DIFFUSE, diff);
@@ -508,11 +523,11 @@ void handleKeyboard(unsigned char key, int _x, int _y) {
         axisToggle = !axisToggle;
     }
     if (key == 'c' || key == 'C'){
-        crossHairToggle = !crossHairToggle;
-        if (crossHairToggle == true) {
-            cout << "Switched to arrow-key controlled crosshair!" << endl;
+        keyboardMouseToggle = !keyboardMouseToggle;
+        if (keyboardMouseToggle == true) {
+            cout << "Switched to arrow-key controls!" << endl;
         } else {
-            cout << "Switched to mouse controlled crosshair!" << endl;
+            cout << "Switched to mouse controls!" << endl;
         }
     }
 
@@ -541,8 +556,7 @@ void handleKeyboard(unsigned char key, int _x, int _y) {
 void handleSpecialKeyboard(int key, int _x, int _y) {
     //crosshair position
     //Note: crosshair shouldnt move beyond field of view
-
-    if (crossHairToggle) {
+    if (keyboardMouseToggle) {
         cout << "cross hair pos : " << crossHairPos[0] << " " << crossHairPos[1] << endl;
         if(key==GLUT_KEY_LEFT){
             if (crossHairPos[0] >= (eye[0] - 1)) {
@@ -555,12 +569,12 @@ void handleSpecialKeyboard(int key, int _x, int _y) {
             }
         }
         if(key == GLUT_KEY_UP){
-            if (crossHairPos[1] <= (eye[1]+1)) {
+            if (crossHairPos[1] <= (eye[1] + 1)) {
                 crossHairPos[1] = crossHairPos[1] + 0.05;
             }
         }
         if(key == GLUT_KEY_DOWN){
-            if (crossHairPos[1] >= (eye[1]-1)) {
+            if (crossHairPos[1] >= (eye[1] - 1)) {
                 crossHairPos[1] = crossHairPos[1] - 0.05;
             }
         }
@@ -588,7 +602,7 @@ void OnMouseClick(int button, int state, int x, int y) {
 }
 
 void motion(int x, int y) {
-    if (crossHairToggle == false) { 
+    if (keyboardMouseToggle == false) { 
         //only move crosshair within visible region
         //NOTE: change this to work for dynamic screensize somehow
         float ox = (float)(x)/250.0;
@@ -596,21 +610,32 @@ void motion(int x, int y) {
         float adjX;
         float adjY;
         if (x <= 250) {
-            adjX = -1.0 * (1.0 - ox);
-            crossHairPos[0] = eye[0] + adjX;
+            adjX = (1.0 - ox);
+            if (crossHairPos[0] >= eye[0] - 1) {
+                crossHairPos[0] = eye[0] - adjX;
+            }
         }
         if (x > 250) {
             adjX = ox - 1.0;
-            crossHairPos[0] = eye[0] + adjX;
+            if (crossHairPos[0] <= eye[0] + 1) {
+                crossHairPos[0] = eye[0] + adjX;
+            }
         }
         if (y <= 250) {
             adjY = (1.0 - oy);
-            crossHairPos[1] = 10 + adjY; //vertical offset
+            if (crossHairPos[1] <= eye[1] + 1) {
+                crossHairPos[1] = eye[1] + adjY;
+            }
         }
         if (y > 250) {
             adjY = -1.0 * (oy - 1.0);
-            crossHairPos[1] = 10 + adjY;
+            if (crossHairPos[1] >= eye[1] - 1) {
+                crossHairPos[1] = eye[1] + adjY;
+            }
         }
+        //important notice about mouse controlled cursor :
+        //occasionally cursor momentarily freezes at edges of window,
+        //move mouse back into window view to fix
         
         //for debugging
         // cout << "x, y : " << x << " " << y << endl;
@@ -632,8 +657,10 @@ int main(int argc, char** argv) {
     //enable lighting with 2 lights
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0); 
-    glEnable(GL_LIGHT1);
+    //glEnable(GL_LIGHT1);
     glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
     glCullFace(GL_FRONT);
 
     projection();
