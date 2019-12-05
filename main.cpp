@@ -36,6 +36,7 @@ int cnt = 0;
 //toggles
 bool reset = true;
 bool axisToggle = false;
+bool pauseToggle = true;
 //false = mouse, true = arrowKey
 //maybe change the default to mouse later****
 bool keyboardMouseToggle = true;
@@ -93,17 +94,72 @@ GLfloat materialDiffuse[4] = {1,0,0,0};
 GLfloat materialShininess[] = {10.0};
 
 //this function is called once at the beginning of the program to print instructions for user
-void instructions()
-{
+void instructions() {
   cout<<"WELCOME TO 3D PAINTBALL SIMULATOR" <<endl;
   cout<<"======================================="<<endl;
-  cout<<"arrow keys : move crosshairs"  <<endl;
-  cout<<"space : shoot paintball"<<endl;
-  cout<<"r : turn paintballs red"<<endl;
-  cout<<"g : turn paintballs green"<<endl;
-  cout<<"b : turn paintballs blue"<<endl;
-  cout<<"w : turn paintballs to random colours"<<endl;
-  cout<<"c : switch between mouse or arrow keys for cursor position"<<endl;
+  cout<<"q : quit simulation"<<endl;
+  cout<<"c : switch between keyboard and mouse controls"<<endl;
+}
+
+//controls for mouse mode
+void mouseControls() {
+    cout << "Mouse Controls : " << endl;
+    cout << "Control crosshair with mouse position" << endl;
+    cout << "Move player with 'a' (left) and 'd' (right)" << endl;
+    cout << "Right click for menu options" << endl;
+    cout << "Left click to shoot paintball" << endl;
+    cout<<"c : switch between mouse or arrow keys for cursor position"<<endl;
+}
+
+//controls for keyboard mode
+void keyboardControls() {
+    cout<<"Keyboard Controls : "<<endl;
+    cout<<"space : shoot paintball"<<endl;
+    cout<<"r : turn paintballs red"<<endl;
+    cout<<"g : turn paintballs green"<<endl;
+    cout<<"b : turn paintballs blue"<<endl;
+    cout<<"w : turn paintballs to random colours"<<endl;
+    cout<<"Move player with 'a' (left) and 'd' (right)"<<endl;
+    cout<<"c : switch between mouse or arrow keys for cursor position"<<endl;
+}
+
+//menu actions/procedure
+void menuProc(int value){
+    if (value == 1) {
+        cout << "Paintball color switched to red!" << endl;
+        paintBallColour[0]=1;
+        paintBallColour[1]=0;
+        paintBallColour[2]=0;
+        colourChanged=true;
+    }
+    if (value == 2) {
+        cout << "Paintball color switched to green!" << endl;
+        paintBallColour[0]=0;
+        paintBallColour[1]=1;
+        paintBallColour[2]=0;
+        colourChanged=true;
+    }
+    if (value == 3) {
+        cout << "Paintball color switched to blue!" << endl;
+        paintBallColour[0]=0;
+        paintBallColour[1]=0;
+        paintBallColour[2]=1;
+        colourChanged=true;
+    }
+    if (value == 4) {
+        cout << "Paitball color switched to randomize!" << endl;
+        colourChanged=false;
+    }
+}
+
+//menu for ball selection related to mouse controls
+void createMenu(){
+    int main_id = glutCreateMenu(menuProc);
+    glutAddMenuEntry("Red", 1);
+    glutAddMenuEntry("Green", 2);
+    glutAddMenuEntry("Blue", 3);
+    glutAddMenuEntry("Random", 4);
+    glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
 //temporarily removed from program
@@ -444,6 +500,12 @@ void display(void) {
         reset = false;
     }
 
+    //try to put the menu stuff in here
+    //only create menu if in mouse control version, otherwise hotkeys for those actions
+    if (keyboardMouseToggle == false) {
+        createMenu();
+    }
+
     for (unsigned int j = 0; j < 1; j++) {
         glLightfv(GL_LIGHT0 +j, GL_POSITION, lightPos[j]);
         glLightfv(GL_LIGHT0 +j, GL_AMBIENT, amb);
@@ -482,7 +544,8 @@ void projection(){
     gluPerspective(45,1,1,100);
 }
 
-//react to users keyboard input
+//keyboard input actions
+//Note: some actions only available when in keyboard mode (keyboardMouseToggle == true)
 void handleKeyboard(unsigned char key, int _x, int _y) {
 
     //close window
@@ -490,33 +553,47 @@ void handleKeyboard(unsigned char key, int _x, int _y) {
         exit(0);
     }
     //set paintballs to red
-    if (key == 'r' or key == 'R') {
-        paintBallColour[0]=1;
-        paintBallColour[1]=0;
-        paintBallColour[2]=0;
-        colourChanged=true;
+    if (keyboardMouseToggle) {
+        if (key == 'r' or key == 'R') {
+            cout << "Paitball color switched to red!" << endl; 
+            paintBallColour[0]=1;
+            paintBallColour[1]=0;
+            paintBallColour[2]=0;
+            colourChanged=true;
+        }
     }
     //set paintballs to green
-    if (key == 'g' or key == 'G') {
-        paintBallColour[0]=0;
-        paintBallColour[1]=1;
-        paintBallColour[2]=0;
-        colourChanged=true;
+    if (keyboardMouseToggle) {
+        if (key == 'g' or key == 'G') {
+            cout << "Paitball color switched to green!" << endl; 
+            paintBallColour[0]=0;
+            paintBallColour[1]=1;
+            paintBallColour[2]=0;
+            colourChanged=true;
+        }
     }
     //set paintballs to blue
-    if (key == 'b' or key == 'B') {
-        paintBallColour[0]=0;
-        paintBallColour[1]=0;
-        paintBallColour[2]=1;
-        colourChanged=true;
+    if (keyboardMouseToggle) {
+        if (key == 'b' or key == 'B') {
+            cout << "Paitball color switched to blue!" << endl; 
+            paintBallColour[0]=0;
+            paintBallColour[1]=0;
+            paintBallColour[2]=1;
+           colourChanged=true;
+        }
     }
-    //set paintballs to blue
-    if (key == 'w' or key == 'W') {
-        colourChanged=false;
+    //set paintballs back to random color
+    if (keyboardMouseToggle) {
+        if (key == 'w' or key == 'W') {
+            cout << "Paitball color switched to randomize!" << endl; 
+            colourChanged=false;
+        }
     }
     //shootpaintball
-    if (key == ' '){
-        shootPaintBall();
+    if (keyboardMouseToggle) {
+        if (key == ' '){
+            shootPaintBall();
+        }
     }
     //toggle x, y, z axis display
     if (key == 'x' || key == 'X'){
@@ -525,9 +602,13 @@ void handleKeyboard(unsigned char key, int _x, int _y) {
     if (key == 'c' || key == 'C'){
         keyboardMouseToggle = !keyboardMouseToggle;
         if (keyboardMouseToggle == true) {
+            //Note: crosshair remains at last location
             cout << "Switched to arrow-key controls!" << endl;
+            keyboardControls();
         } else {
+            //Note: crosshair will jump to mouse position on fist movement
             cout << "Switched to mouse controls!" << endl;
+            mouseControls();
         }
     }
 
@@ -581,23 +662,13 @@ void handleSpecialKeyboard(int key, int _x, int _y) {
     }
 }
 
-//no mouse driven interaction for now
+//In mouse mode, mouse left click shoots paintball
 void OnMouseClick(int button, int state, int x, int y) {
-    //shoot paintball with mouse temporarily removed, spacebar instead
-    // if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-    //     shootPaintBall();
-    // }
-
-    //look over this again might toss it
-    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-        //float ox = (x - 450) * 80.0 / 400;
-        //float oy = (450 - y) * 80.0 / 400;
-        // cout << "cross hair pos : " << crossHairPos[0] << " " << crossHairPos[1] << endl;
-        // float ox = (x/250 - 1.0);
-        // int oy = -1 * (y/250 - 1);
-        // crossHairPos[0] = (float)ox;
-        // crossHairPos[1] = 11 ;
-        cout << "new crosshairpos : " << crossHairPos[0] << " " << crossHairPos[1] << endl;
+    if (keyboardMouseToggle == false) {
+        if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+        //if (button == GLUT_LEFT_BUTTON) {
+            shootPaintBall();
+        }
     }
 }
 
@@ -628,9 +699,9 @@ void motion(int x, int y) {
             }
         }
         if (y > 250) {
-            adjY = -1.0 * (oy - 1.0);
+            adjY = -1.0 * (oy - 1.0);   //inverted y coordinate
             if (crossHairPos[1] >= eye[1] - 1) {
-                crossHairPos[1] = eye[1] + adjY;
+                crossHairPos[1] = eye[1] + adjY;    //due to invert add adjY instead
             }
         }
         //important notice about mouse controlled cursor :
@@ -667,14 +738,14 @@ int main(int argc, char** argv) {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_NORMALIZE);
 
-    //glutMouseFunc(OnMouseClick);
+    glutMouseFunc(OnMouseClick);
     glutKeyboardFunc(handleKeyboard);
     glutSpecialFunc(handleSpecialKeyboard);
     //glutMouseFunc(OnMouseClick);
     glutPassiveMotionFunc(motion);
     glutDisplayFunc(display);
     // PlaySound("35 - Lost Woods.wav", NULL, SND_SYNC);
-
+    
     glutMainLoop();             //starts the event glutMainLoop
 
     return 0;

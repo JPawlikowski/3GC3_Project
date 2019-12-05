@@ -1,21 +1,25 @@
 Jakub Pawlikowski - 400011899
 Tyler Philips - 400017512
 
-3GC3 Project Prototype
+3GC3 Final Project
 
-The project is a paint ball shooting range, as of now the shooter is stationary
-with an arrow-key controlled crosshair which aims where the paintball will be shot from 
-(using spacebar to fire).The floor and wall are simple flat polygons, the paintballs are created with the 
-Paintball.cpp class and drawn with glutSolidSphere. The paintball splatters on the
-wall on wall and paintball collision and displays a square with the Splatter.cpp class. Both 
-splatters and paintballs are stored in vectors. Two lights have been enabled in the environment and
+Paintball shooting range simulator!
+
+Player standing behind shooting range table can shoot various paintballs at wall.
+Player has options for paintball colours, movement of aiming crosshair and horizontal movement
+behind shooting table.
+
+Press 'c' to toggle keyboard+arrow key and mouse controls.
+
+Both splatters and paintballs are stored in vectors. Two lights have been enabled in the environment and
 material properties have been applied to the paintballs. We made firing more realistic in the way the
-crosshairs movement affects the location the paintball lands. Some buttons added include r, g, and b
-which will turn all paintballs to either red blue or green. 'w' will set the colours back to random
+crosshairs movement and player position affects the location the paintball lands.
 
-For the final submission we will implement detailed splatters which will have dynamic
-shapes and blend colors (for overal splatters). We will also include a menu to change the paintball colours
 
+Notes:
+Occasional crash issue when opening menu (right click in mouse control mode)
+"2019-12-05 18:41:24.985 mainProj.o[54586:1683579] GLUT Warning: The following is a new check for GLUT 3.0; update your code.
+2019-12-05 18:41:24.985 mainProj.o[54586:1683579] GLUT Fatal Error: menu manipulation not allowed while menus in use."
 
 works cited
 https://stackoverflow.com/questions/2183270/what-is-the-easiest-way-to-print-text-to-screen-in-opengl
