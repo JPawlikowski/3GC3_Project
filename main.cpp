@@ -597,11 +597,11 @@ void motion(int x, int y) {
         float adjY;
         if (x <= 250) {
             adjX = -1.0 * (1.0 - ox);
-            crossHairPos[0] = adjX;
+            crossHairPos[0] = eye[0] + adjX;
         }
         if (x > 250) {
             adjX = ox - 1.0;
-            crossHairPos[0] = adjX;
+            crossHairPos[0] = eye[0] + adjX;
         }
         if (y <= 250) {
             adjY = (1.0 - oy);
