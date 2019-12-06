@@ -27,6 +27,21 @@ using namespace std;
 #  include <GL/freeglut.h>
 #endif
 
+//texture variables
+//an array for iamge data
+GLubyte* grass_img;
+GLubyte* wood_img;
+GLubyte* brick_img;
+
+GLuint textures[3];
+
+//dimensions of textures
+int width1, height1, max1;
+int width2, height2, max2;
+int width3, height3, max3;
+
+float cols[6][3] = { {1,0,0}, {1,1,1}, {1,1,0}, {0,1,0}, {0,0,1}, {1,0,1} };
+
 //global variables
 std::vector<Paintball> paintBallVec(0);
 std::vector<Splatter> splatterVec(0);
@@ -222,13 +237,18 @@ void floor(){
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecFloor);
 
     //draw floor
+    //narutoglColor3fv(cols[1]);
+    glColor3fv(cols[1]);
+    glBindTexture(GL_TEXTURE_2D, textures[0]);
     glBegin(GL_POLYGON);
     glNormal3f(0.0,1.0,0.0);
     for(int i=0;i<4;i++){
         glVertex3f(floorCoord[i][0],floorCoord[i][1],floorCoord[i][2]);
     }
     glEnd();
+
 }
+
 //Draw the wall which will be shot at
 void wall() {
     GLfloat dummaterialDiffWall[4]={0.5, 0.2, 0.0, 0.0};
@@ -538,10 +558,122 @@ void display(void) {
     glutPostRedisplay();
 }
 
-void projection(){
+
+
+//taken from textures example
+GLubyte* LoadPPM(char* file, int* width, int* height, int* maxi)
+{
+    GLubyte* img;
+    FILE *fd;
+    int n, m;
+    int  k, nm;
+    char c;
+    int i;
+    char b[100];
+    float s;
+    int red, green, blue;
+    
+    fd = fopen(file, "r");
+    fscanf(fd,"%[^\n] ",b);
+    if(b[0]!='P'|| b[1] != '3')
+    {
+        printf("%s is not a PPM file!\n",file);
+        exit(0);
+    }
+    printf("%s is a PPM file\n", file);
+    fscanf(fd, "%c",&c);
+    while(c == '#')
+    {
+        fscanf(fd, "%[^\n] ", b);
+        printf("%s\n",b);
+        fscanf(fd, "%c",&c);
+    }
+    ungetc(c,fd);
+    fscanf(fd, "%d %d %d", &n, &m, &k);
+    
+    printf("%d rows  %d columns  maxi value= %d\n",n,m,k);
+    
+    nm = n*m;
+    
+    img = (GLubyte*)malloc(3*sizeof(GLuint)*nm);
+    
+    
+    s=255.0/k;
+    
+    
+    for(i=0;i<nm;i++)
+    {
+        fscanf(fd,"%d %d %d",&red, &green, &blue );
+        img[3*nm-3*i-3]=red*s;
+        img[3*nm-3*i-2]=green*s;
+        img[3*nm-3*i-1]=blue*s;
+    }
+    
+    *width = n;
+    *height = m;
+    *maxi = k;
+    
+    return img;
+}
+
+//initialize textures
+void init(void)
+{
+    
+    glMatrixMode(GL_TEXTURE);
+    glScalef(1,-1,-1);
+    
+    grass_img = LoadPPM("grass.ppm", &width1, &height1, &max1); 
+    wood_img = LoadPPM("wood.ppm", &width2, &height2, &max2);
+    brick_img = LoadPPM("brick.ppm", &width3, &height3, &max3);
+    
+    glEnable(GL_TEXTURE_2D);
+    
+    glGenTextures(3, textures);
+     // grass texture
+    glBindTexture(GL_TEXTURE_2D, textures[0]);
+   
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width1, height1, 0, GL_RGB, GL_UNSIGNED_BYTE, grass_img);
+    
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    //wood texture
+    glBindTexture(GL_TEXTURE_2D, textures[1]);
+    
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width2, height2, 0, GL_RGB, GL_UNSIGNED_BYTE, wood_img);
+    
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    //brick texture
+    glBindTexture(GL_TEXTURE_2D, textures[2]);
+    
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width3, height3, 0, GL_RGB, GL_UNSIGNED_BYTE, brick_img);
+    
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    
+    
+    
+    glClearColor(0, 0, 0, 0);
+    glColor3f(1, 1, 1);
+    
+    //enable Z buffer test, otherwise things appear in the order they're drawn
+    //enable lighting with 2 lights
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(45,1,1,100);
+    
+    
 }
 
 //keyboard input actions
@@ -717,26 +849,25 @@ void motion(int x, int y) {
 }
 
 int main(int argc, char** argv) {
-	glutInit(&argc, argv);     //starts up GLUT
+    glutInit(&argc, argv);     //starts up GLUT
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
     //create window
     glutInitWindowSize(500, 500);
     glutInitWindowPosition(50, 50);
     glutCreateWindow("Paintball Range");  //creates the window
     
-    //enable Z buffer test, otherwise things appear in the order they're drawn
-    //enable lighting with 2 lights
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0); 
+    
+    
     //glEnable(GL_LIGHT1);
     glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
     glCullFace(GL_FRONT);
 
-    projection();
+    
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_NORMALIZE);
+    init();
 
     glutMouseFunc(OnMouseClick);
     glutKeyboardFunc(handleKeyboard);
