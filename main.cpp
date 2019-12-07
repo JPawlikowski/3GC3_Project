@@ -41,7 +41,7 @@ int width2, height2, max2;
 int width3, height3, max3;
 
 float cols[6][3] = { {1,0,0}, {1,1,1}, {1,1,0}, {0,1,0}, {0,0,1}, {1,0,1} };
-float floorText[4][3] = { {0,0,0}, {1,0,0}, {1,0,1}, {0,0,1} };
+float floorText[4][2] = { {0,0}, {0,1}, {1,1}, {1,0} };
 
 //global variables
 std::vector<Paintball> paintBallVec(0);
@@ -205,7 +205,7 @@ void floor(){
     glNormal3f(0.0,1.0,0.0);
 
     for(int i=0;i<4;i++){
-        glTexCoord3f(floorText[i][0],floorText[i][1],floorText[i][2]);
+        glTexCoord2f(floorText[i][0],floorText[i][1]);
         glVertex3f(floorCoord[i][0],floorCoord[i][1],floorCoord[i][2]);
     }
     glEnd();
@@ -232,7 +232,7 @@ void wall() {
     glBegin(GL_QUADS);
         glNormal3f(0.0,0.0,1.0);
         for(int i=0;i<4;i++){
-            glTexCoord3f(floorText[i][0],floorText[i][1],floorText[i][2]);
+            glTexCoord2f(floorText[i][0],floorText[i][1]);
             glVertex3f(wallCoords[i][0], wallCoords[i][1], wallCoords[i][2]);
         }
     glEnd();
@@ -264,12 +264,12 @@ void drawTable() {
     glBegin(GL_POLYGON);
     glNormal3f(0,1.0,0);
         for(int i=0;i<4;i++){
-            glTexCoord3f(floorText[i][0],floorText[i][1],floorText[i][2]);
+            glTexCoord2f(floorText[i][0],floorText[i][1]);
             glVertex3f(tableCoords[i][0],tableCoords[i][1],tableCoords[i][2]);
         }
     glEnd();
     glPushMatrix();
-    
+
         //red ball
         glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, ballDiff1);
         glTranslatef(-2,7.25,42.5);
@@ -609,9 +609,9 @@ void init(void)
    
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width1, height1, 0, GL_RGB, GL_UNSIGNED_BYTE, grass_img);
     
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    // // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_CLAMP_TO_BORDER);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     //wood texture
     glBindTexture(GL_TEXTURE_2D, textures[1]);
