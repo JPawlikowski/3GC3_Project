@@ -41,6 +41,7 @@ int width2, height2, max2;
 int width3, height3, max3;
 
 float cols[6][3] = { {1,0,0}, {1,1,1}, {1,1,0}, {0,1,0}, {0,0,1}, {1,0,1} };
+float floorText[4][3] = { {0,0,0}, {1,0,0}, {1,0,1}, {0,0,1} };
 
 //global variables
 std::vector<Paintball> paintBallVec(0);
@@ -177,48 +178,7 @@ void createMenu(){
     glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
-//temporarily removed from program
-//display shots fired on top of wall
-void textDisplay()
-{ 
-  //set properties of text
-  //GLfloat dummaterialDiff[4]={.2,.8,.4,0};
-  //glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiff);
-  
-  //get length of shotsFired variable
-  string number= to_string((int)shotsFired);
-  int numSize=number.length();
-  char word[]="Shots fired: ";
-  char output[numSize+14];
 
-  //create a char list that holds contents "shots fired: 125"
-  //- 125 is example value for variablenumber
-  //not working for some reason the output is just "shots fired: " and the number is completely ignored
-  for(int i =0;i<numSize+14;i++){
-    if(i<13){
-        for(int j=0;j<13;j++){
-            output[i]=word[j];           
-            i++;
-        }
-
-    }else{
-        for(int j=0;j<numSize;j++){
-            // cout<<"output: "<<output<<endl;
-            output[i]=number[j];
-            
-            i++;
-        }
-    }
- }
-      
-  glRasterPos3f(-6, 25,0);
-  //int len  = (int)strlen(output); //issue on gpu1, temporarily removed
-  int len = 0;
-
-  for (int i = 0; i < len; i++) {
-    glutBitmapCharacter(GLUT_BITMAP_9_BY_15, output[i]);
-  }
-}
 
 //Draw the floor in the simulation
 void floor(){
@@ -237,12 +197,15 @@ void floor(){
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecFloor);
 
     //draw floor
-    //narutoglColor3fv(cols[1]);
+    //here
     glColor3fv(cols[1]);
     glBindTexture(GL_TEXTURE_2D, textures[0]);
+
     glBegin(GL_POLYGON);
     glNormal3f(0.0,1.0,0.0);
+
     for(int i=0;i<4;i++){
+        glTexCoord3f(floorText[i][0],floorText[i][1],floorText[i][2]);
         glVertex3f(floorCoord[i][0],floorCoord[i][1],floorCoord[i][2]);
     }
     glEnd();
@@ -263,9 +226,13 @@ void wall() {
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, dummaterialShinyWall);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecWall);
 
+    //here
+    glColor3fv(cols[2]);
+    glBindTexture(GL_TEXTURE_2D, textures[2]);
     glBegin(GL_QUADS);
         glNormal3f(0.0,0.0,1.0);
         for(int i=0;i<4;i++){
+            glTexCoord3f(floorText[i][0],floorText[i][1],floorText[i][2]);
             glVertex3f(wallCoords[i][0], wallCoords[i][1], wallCoords[i][2]);
         }
     glEnd();
@@ -290,13 +257,19 @@ void drawTable() {
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecTable);
     glMaterialfv(GL_FRONT, GL_EMISSION, emitTable);
 
+    //here
+    glColor3fv(cols[3]);
+    glBindTexture(GL_TEXTURE_2D, textures[1]);
+
     glBegin(GL_POLYGON);
     glNormal3f(0,1.0,0);
         for(int i=0;i<4;i++){
+            glTexCoord3f(floorText[i][0],floorText[i][1],floorText[i][2]);
             glVertex3f(tableCoords[i][0],tableCoords[i][1],tableCoords[i][2]);
         }
     glEnd();
     glPushMatrix();
+    
         //red ball
         glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, ballDiff1);
         glTranslatef(-2,7.25,42.5);
@@ -559,7 +532,7 @@ void display(void) {
 }
 
 
-
+//here - code taken from textures.cpp example
 //taken from textures example
 GLubyte* LoadPPM(char* file, int* width, int* height, int* maxi)
 {
@@ -577,10 +550,10 @@ GLubyte* LoadPPM(char* file, int* width, int* height, int* maxi)
     fscanf(fd,"%[^\n] ",b);
     if(b[0]!='P'|| b[1] != '3')
     {
-        printf("%s is not a PPM file!\n",file);
+        //printf("%s is not a PPM file!\n",file);
         exit(0);
     }
-    printf("%s is a PPM file\n", file);
+    //printf("%s is a PPM file\n", file);
     fscanf(fd, "%c",&c);
     while(c == '#')
     {
@@ -591,7 +564,7 @@ GLubyte* LoadPPM(char* file, int* width, int* height, int* maxi)
     ungetc(c,fd);
     fscanf(fd, "%d %d %d", &n, &m, &k);
     
-    printf("%d rows  %d columns  maxi value= %d\n",n,m,k);
+    //printf("%d rows  %d columns  maxi value= %d\n",n,m,k);
     
     nm = n*m;
     
@@ -616,6 +589,7 @@ GLubyte* LoadPPM(char* file, int* width, int* height, int* maxi)
     return img;
 }
 
+//here
 //initialize textures
 void init(void)
 {
@@ -867,7 +841,7 @@ int main(int argc, char** argv) {
     
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_NORMALIZE);
-    init();
+    init(); //here
 
     glutMouseFunc(OnMouseClick);
     glutKeyboardFunc(handleKeyboard);
