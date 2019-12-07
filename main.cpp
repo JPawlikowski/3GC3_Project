@@ -33,12 +33,19 @@ GLubyte* grass_img;
 GLubyte* wood_img;
 GLubyte* brick_img;
 
-GLuint textures[3];
+GLubyte* redSplat;
+GLubyte* blueSplat;
+GLubyte* greenSplat;
+
+GLuint textures[6];
 
 //dimensions of textures
 int width1, height1, max1;
 int width2, height2, max2;
 int width3, height3, max3;
+int width4, height4, max4;
+int width5, height5, max5;
+int width6, height6, max6;
 
 float cols[6][3] = { {1,0,0}, {1,1,1}, {1,1,0}, {0,1,0}, {0,0,1}, {1,0,1} };
 float floorText[4][2] = { {0,0}, {0,1}, {1,1}, {1,0} };
@@ -111,7 +118,7 @@ GLfloat materialShininess[] = {10.0};
 
 //this function is called once at the beginning of the program to print instructions for user
 void instructions() {
-  cout<<"WELCOME TO 3D PAINTBALL SIMULATOR" <<endl;
+  cout<<endl<<"WELCOME TO 3D PAINTBALL SIMULATOR" <<endl;
   cout<<"======================================="<<endl;
   cout<<"q : quit simulation"<<endl;
   cout<<"c : switch between keyboard and mouse controls"<<endl;
@@ -119,7 +126,8 @@ void instructions() {
 
 //controls for mouse mode
 void mouseControls() {
-    cout << "Mouse Controls : " << endl;
+    cout <<endl<< "Mouse Controls : " << endl;
+    cout<<"---------------------------------------"<<endl;
     cout << "Control crosshair with mouse position" << endl;
     cout << "Move player with 'a' (left) and 'd' (right)" << endl;
     cout << "Right click for menu options" << endl;
@@ -129,7 +137,8 @@ void mouseControls() {
 
 //controls for keyboard mode
 void keyboardControls() {
-    cout<<"Keyboard Controls : "<<endl;
+    cout<<endl<<"Keyboard Controls : "<<endl;
+    cout<<"---------------------------------------"<<endl;
     cout<<"space : shoot paintball"<<endl;
     cout<<"r : turn paintballs red"<<endl;
     cout<<"g : turn paintballs green"<<endl;
@@ -198,7 +207,7 @@ void floor(){
 
     //draw floor
     //here
-    glColor3fv(cols[1]);
+    // glColor3fv(cols[1]);
     glBindTexture(GL_TEXTURE_2D, textures[0]);
 
     glBegin(GL_POLYGON);
@@ -227,8 +236,9 @@ void wall() {
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecWall);
 
     //here
-    glColor3fv(cols[2]);
+    // glColor3fv(cols[1]);
     glBindTexture(GL_TEXTURE_2D, textures[2]);
+
     glBegin(GL_QUADS);
         glNormal3f(0.0,0.0,1.0);
         for(int i=0;i<4;i++){
@@ -240,6 +250,7 @@ void wall() {
 
 //Draw a table which the shooter stands behind
 void drawTable() {
+    //initializing materialsßßß
     GLfloat dummaterialDiffTable[3]={0.9,0.6,0.3};
     GLfloat dummaterialSpecTable[4] = {0,0,0,0};
     GLfloat dummaterialAmbTable[4] = {1,1,1,0};
@@ -257,9 +268,9 @@ void drawTable() {
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecTable);
     glMaterialfv(GL_FRONT, GL_EMISSION, emitTable);
 
-    //here
-    glColor3fv(cols[3]);
-    glBindTexture(GL_TEXTURE_2D, textures[1]);
+    
+    // glColor3fv(cols[1]);
+    //glBindTexture(GL_TEXTURE_2D, textures[1]);
 
     glBegin(GL_POLYGON);
     glNormal3f(0,1.0,0);
@@ -268,6 +279,8 @@ void drawTable() {
             glVertex3f(tableCoords[i][0],tableCoords[i][1],tableCoords[i][2]);
         }
     glEnd();
+
+    //make selected ball on table glow
     glPushMatrix();
 
         //red ball
@@ -386,11 +399,34 @@ void drawSplatters() {
 
         // glEnd();
 
+        //uncomment for splatters
+        // glColor3fv(cols[1]);
+
+        // if(paintBallColour[0]==1){
+        //     glBindTexture(GL_TEXTURE_2D, 0);
+        //     glBindTexture(GL_TEXTURE_2D, textures[3]);
+        // }
+        // else if(paintBallColour[1]==1){
+        //     glBindTexture(GL_TEXTURE_2D, 0);
+        //     glBindTexture(GL_TEXTURE_2D, textures[4]);
+        // }
+        // else if(paintBallColour[2]==1){
+        //     glBindTexture(GL_TEXTURE_2D, 0);
+        //     glBindTexture(GL_TEXTURE_2D, textures[5]);
+        // }
+
+        
+        
+
         glBegin(GL_QUADS);
             glNormal3f(0.0,0.0,1.0);
+            glTexCoord2f(floorText[0][0],floorText[0][1]);
             glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY - 2, -34.9);
+            glTexCoord2f(floorText[1][0],floorText[1][1]);
             glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY + 2, -34.9);
+            glTexCoord2f(floorText[2][0],floorText[2][1]);
             glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY + 2, -34.9);
+            glTexCoord2f(floorText[3][0],floorText[3][1]);
             glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY - 2, -34.9);
         glEnd();
     }
@@ -490,6 +526,8 @@ void display(void) {
     //print instructions and reset particles
     if(reset == true){
         instructions();
+        mouseControls();
+        keyboardControls();
         reset = false;
     }
 
@@ -600,6 +638,9 @@ void init(void)
     grass_img = LoadPPM("grass.ppm", &width1, &height1, &max1); 
     wood_img = LoadPPM("wood.ppm", &width2, &height2, &max2);
     brick_img = LoadPPM("brick.ppm", &width3, &height3, &max3);
+    redSplat = LoadPPM("redSplat.ppm", &width4, &height4, &max4); 
+    blueSplat = LoadPPM("blueSplat.ppm", &width5, &height5, &max5);
+    greenSplat = LoadPPM("greenSplat.ppm", &width6, &height6, &max6);
     
     glEnable(GL_TEXTURE_2D);
     
@@ -627,6 +668,36 @@ void init(void)
     glBindTexture(GL_TEXTURE_2D, textures[2]);
     
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width3, height3, 0, GL_RGB, GL_UNSIGNED_BYTE, brick_img);
+    
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    //red splatter texture
+    glBindTexture(GL_TEXTURE_2D, textures[3]);
+    
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width4, height4, 0, GL_RGB, GL_UNSIGNED_BYTE, redSplat);
+    
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    //blue splatter texture
+    glBindTexture(GL_TEXTURE_2D, textures[4]);
+    
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width5, height5, 0, GL_RGB, GL_UNSIGNED_BYTE, greenSplat);
+    
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    //green splatter texture
+    glBindTexture(GL_TEXTURE_2D, textures[5]);
+    
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width6, height6, 0, GL_RGB, GL_UNSIGNED_BYTE, blueSplat);
     
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
@@ -710,11 +781,11 @@ void handleKeyboard(unsigned char key, int _x, int _y) {
         if (keyboardMouseToggle == true) {
             //Note: crosshair remains at last location
             cout << "Switched to arrow-key controls!" << endl;
-            keyboardControls();
+            // keyboardControls();
         } else {
             //Note: crosshair will jump to mouse position on fist movement
             cout << "Switched to mouse controls!" << endl;
-            mouseControls();
+            // mouseControls();
         }
     }
 
