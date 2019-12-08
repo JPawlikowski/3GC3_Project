@@ -739,7 +739,7 @@ void handleSpecialKeyboard(int key, int _x, int _y) {
     //crosshair position
     //Note: crosshair shouldnt move beyond field of view
     if (keyboardMouseToggle) {
-        cout << "cross hair pos : " << crossHairPos[0] << " " << crossHairPos[1] << endl;
+        //cout << "cross hair pos : " << crossHairPos[0] << " " << crossHairPos[1] << endl;
         if(key==GLUT_KEY_LEFT){
             if (crossHairPos[0] >= (eye[0] - 1)) {
                 crossHairPos[0] = crossHairPos[0] - 0.05;
