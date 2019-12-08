@@ -17,9 +17,15 @@ crosshairs movement and player position affects the location the paintball lands
 
 
 Notes:
-Occasional crash issue when opening menu (right click in mouse control mode)
-"2019-12-05 18:41:24.985 mainProj.o[54586:1683579] GLUT Warning: The following is a new check for GLUT 3.0; update your code.
-2019-12-05 18:41:24.985 mainProj.o[54586:1683579] GLUT Fatal Error: menu manipulation not allowed while menus in use."
+project compiles on gpu1 however we are having issues with the x11 forwarding giving us error:
+-------------------
+X Error of failed request:  BadValue (integer parameter out of range for operation)
+  Major opcode of failed request:  150 (GLX)
+  Minor opcode of failed request:  24 (X_GLXCreateNewContext)
+  Value in failed request:  0x0
+  Serial number of failed request:  33
+  Current serial number in output stream:  34
+-------------------
 
 works cited
 https://stackoverflow.com/questions/2183270/what-is-the-easiest-way-to-print-text-to-screen-in-opengl
