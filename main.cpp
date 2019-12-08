@@ -47,7 +47,7 @@ float floorText[4][2] = { {0,0}, {0,1}, {1,1}, {1,0} };
 //global variables
 std::vector<Paintball> paintBallVec(0);
 std::vector<Splatter> splatterVec(0);
-//bool shot = false;
+
 int cnt = 0;
 
 //toggles
@@ -61,7 +61,7 @@ bool keyboardMouseToggle = true;
 float shotsFired=0;
 
 //crosshair coordinates
-float crossHairPos[3] = {0, 9, 47};
+float crossHairPos[3] = {0, 10.5, 47};
 
 // One light for now
 float lightPos[2][4] = {
@@ -179,8 +179,6 @@ void createMenu(){
     glutAddMenuEntry("Random", 4);
     glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
-
-
 
 //Draw the floor in the simulation
 void floor(){
