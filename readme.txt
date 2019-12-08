@@ -15,6 +15,7 @@ Both splatters and paintballs are stored in vectors. Two lights have been enable
 material properties have been applied to the paintballs. We made firing more realistic in the way the
 crosshairs movement and player position affects the location the paintball lands.
 
+Please note that the program functions best if the window is 500x500
 
 Notes:
 Occasional crash issue when opening menu (right click in mouse control mode)

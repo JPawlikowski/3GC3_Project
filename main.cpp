@@ -28,24 +28,18 @@ using namespace std;
 #endif
 
 //texture variables
-//an array for iamge data
 GLubyte* grass_img;
 GLubyte* wood_img;
 GLubyte* brick_img;
-
-GLubyte* redSplat;
-GLubyte* blueSplat;
-GLubyte* greenSplat;
-
-GLuint textures[6];
+GLubyte* splat;
+//an array for iamge data
+GLuint textures[4];
 
 //dimensions of textures
 int width1, height1, max1;
 int width2, height2, max2;
 int width3, height3, max3;
 int width4, height4, max4;
-int width5, height5, max5;
-int width6, height6, max6;
 
 float cols[6][3] = { {1,0,0}, {1,1,1}, {1,1,0}, {0,1,0}, {0,0,1}, {1,0,1} };
 float floorText[4][2] = { {0,0}, {0,1}, {1,1}, {1,0} };
@@ -377,46 +371,17 @@ void drawSplatters() {
     GLfloat dummaterialAmbSplatter[4] = {1.0, 1.0, 1.0, 1.0};
     GLfloat dummaterialShinySplatter = 4.0;
     
-    for(int i = splatterVec.size()-1; i >=0 ; i--) { 
-        GLfloat dummaterialDiffSplatter[4]={splatterVec[i].color[0], splatterVec[i].color[1], splatterVec[i].color[2], 1};
+    for(int i =0; i< splatterVec.size(); i++) { 
+        GLfloat dummaterialDiffSplatter[4]={1,1,1,0};
         glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dummaterialDiffSplatter);
         glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, dummaterialAmbSplatter);
         glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, dummaterialShinySplatter);
         glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecSplatter);
 
-        //splatter shaoe, wash rn
-        // glBegin(GL_POLYGON);
-        //     glNormal3f(0.0, 0.0, 1.0);
-        //     glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY - 2, -34.9);
-        //     glVertex3f(splatterVec[i].mX - 1, splatterVec[i].mY , -34.9);
-        //     glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY + 2, -34.9);
-        //     glVertex3f(splatterVec[i].mX , splatterVec[i].mY + 1, -34.9);
-        //     glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY + 2, -34.9);
-        //     glVertex3f(splatterVec[i].mX + 1, splatterVec[i].mY , -34.9);
-        //     glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY - 2, -34.9);
-        //     glVertex3f(splatterVec[i].mX , splatterVec[i].mY - 1, -34.9);
-        //     glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY - 2, -34.9);
-
-        // glEnd();
-
         //uncomment for splatters
-        // glColor3fv(cols[1]);
-
-        // if(paintBallColour[0]==1){
-        //     glBindTexture(GL_TEXTURE_2D, 0);
-        //     glBindTexture(GL_TEXTURE_2D, textures[3]);
-        // }
-        // else if(paintBallColour[1]==1){
-        //     glBindTexture(GL_TEXTURE_2D, 0);
-        //     glBindTexture(GL_TEXTURE_2D, textures[4]);
-        // }
-        // else if(paintBallColour[2]==1){
-        //     glBindTexture(GL_TEXTURE_2D, 0);
-        //     glBindTexture(GL_TEXTURE_2D, textures[5]);
-        // }
-
-        
-        
+        glColor3fv(cols[1]);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindTexture(GL_TEXTURE_2D, textures[3]);       
 
         glBegin(GL_QUADS);
             glNormal3f(0.0,0.0,1.0);
@@ -635,12 +600,11 @@ void init(void)
     glMatrixMode(GL_TEXTURE);
     glScalef(1,-1,-1);
     
+    const char * grasschar="grass.ppm";
     grass_img = LoadPPM("grass.ppm", &width1, &height1, &max1); 
     wood_img = LoadPPM("wood.ppm", &width2, &height2, &max2);
     brick_img = LoadPPM("brick.ppm", &width3, &height3, &max3);
-    redSplat = LoadPPM("redSplat.ppm", &width4, &height4, &max4); 
-    blueSplat = LoadPPM("blueSplat.ppm", &width5, &height5, &max5);
-    greenSplat = LoadPPM("greenSplat.ppm", &width6, &height6, &max6);
+    splat = LoadPPM("rainbow.ppm", &width4, &height4, &max4); 
     
     glEnable(GL_TEXTURE_2D);
     
@@ -674,35 +638,16 @@ void init(void)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-    //red splatter texture
+    // splatter texture
     glBindTexture(GL_TEXTURE_2D, textures[3]);
     
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width4, height4, 0, GL_RGB, GL_UNSIGNED_BYTE, redSplat);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width4, height4, 0, GL_RGB, GL_UNSIGNED_BYTE, splat);
     
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-    //blue splatter texture
-    glBindTexture(GL_TEXTURE_2D, textures[4]);
-    
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width5, height5, 0, GL_RGB, GL_UNSIGNED_BYTE, greenSplat);
-    
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-    //green splatter texture
-    glBindTexture(GL_TEXTURE_2D, textures[5]);
-    
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width6, height6, 0, GL_RGB, GL_UNSIGNED_BYTE, blueSplat);
-    
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     
     
     
