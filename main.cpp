@@ -838,7 +838,9 @@ int main(int argc, char** argv) {
     glutInitWindowSize(500, 500);
     glutInitWindowPosition(50, 50);
     glutCreateWindow("Paintball Range");  //creates the window
-    
+    instructions();
+    mouseControls();
+    keyboardControls();
     glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glCullFace(GL_FRONT);
