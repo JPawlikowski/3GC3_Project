@@ -450,7 +450,7 @@ void drawPaintBalls(){
 
             glTranslatef(paintBallVec[i].mX, paintBallVec[i].mY, paintBallVec[i].mZ);
 
-            if (paintBallVec[i].mZ <= -35 and paintBallVec[i].mX<15 
+            if (paintBallVec[i].mZ <= -34 and paintBallVec[i].mX<15 
             and paintBallVec[i].mX>-15 and paintBallVec[i].mY<20 and paintBallVec[i].mY>0) {    //hit wall
                 wallInteraction(i);
             }
@@ -507,9 +507,9 @@ void display(void) {
 
     drawCrossHair();
 
-    drawPaintBalls();
-
     drawSplatters();
+
+    drawPaintBalls();
 
     //switch our buffers for a smooth animation
     glutSwapBuffers();
