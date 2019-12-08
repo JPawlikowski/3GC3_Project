@@ -51,7 +51,7 @@ std::vector<Splatter> splatterVec(0);
 int cnt = 0;
 
 //toggles
-bool reset = true;
+bool reset = false;
 bool axisToggle = false;
 bool pauseToggle = true;
 //false = mouse, true = arrowKey
@@ -475,10 +475,12 @@ void display(void) {
 
     //if initial run of program
     //print instructions and reset particles
-    if(reset == true){
+    if(reset){
         instructions();
         mouseControls();
         keyboardControls();
+        paintBallVec.clear();
+        splatterVec.clear();
         reset = false;
     }
 
@@ -651,6 +653,9 @@ void handleKeyboard(unsigned char key, int _x, int _y) {
     //close window
     if (key == 'q' or key == 'Q') {
         exit(0);
+    }
+    if (key == 'p' or key == 'P') {
+        reset = !reset;
     }
     //set paintballs to red
     if (keyboardMouseToggle) {
