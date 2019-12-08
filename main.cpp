@@ -114,6 +114,7 @@ void instructions() {
   cout<<endl<<"WELCOME TO 3D PAINTBALL SIMULATOR" <<endl;
   cout<<"======================================="<<endl;
   cout<<"q : quit simulation"<<endl;
+  cout<<"p : reset simnulation"<<endl;
   cout<<"c : switch between keyboard and mouse controls"<<endl;
 }
 
@@ -373,13 +374,13 @@ void drawSplatters() {
         glBegin(GL_QUADS);
             glNormal3f(0.0,0.0,1.0);
             glTexCoord2f(floorText[0][0],floorText[0][1]);
-            glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY - 2, -34.9);
+            glVertex3f(splatterVec[i].mX - 3, splatterVec[i].mY - 3, -34.9);
             glTexCoord2f(floorText[1][0],floorText[1][1]);
-            glVertex3f(splatterVec[i].mX - 2, splatterVec[i].mY + 2, -34.9);
+            glVertex3f(splatterVec[i].mX - 3, splatterVec[i].mY + 3, -34.9);
             glTexCoord2f(floorText[2][0],floorText[2][1]);
-            glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY + 2, -34.9);
+            glVertex3f(splatterVec[i].mX + 3, splatterVec[i].mY + 3, -34.9);
             glTexCoord2f(floorText[3][0],floorText[3][1]);
-            glVertex3f(splatterVec[i].mX + 2, splatterVec[i].mY - 2, -34.9);
+            glVertex3f(splatterVec[i].mX + 3, splatterVec[i].mY - 3, -34.9);
         glEnd();
     }
 }
@@ -445,7 +446,6 @@ void drawPaintBalls(){
                 }else{
                     paintBallVec[i].mY -= .2;
                 }
-
             }
 
             glTranslatef(paintBallVec[i].mX, paintBallVec[i].mY, paintBallVec[i].mZ);
