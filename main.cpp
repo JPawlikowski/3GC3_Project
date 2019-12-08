@@ -54,6 +54,7 @@ int cnt = 0;
 bool reset = true;
 bool axisToggle = false;
 bool pauseToggle = true;
+bool sizeToggle = false;
 //false = mouse, true = arrowKey
 bool keyboardMouseToggle = true;
 
@@ -115,6 +116,7 @@ void instructions() {
   cout<<"======================================="<<endl;
   cout<<"q : quit simulation"<<endl;
   cout<<"p : reset simnulation"<<endl;
+  cout<<"h : toggle paintball size"<<endl;
   cout<<"c : switch between keyboard and mouse controls"<<endl;
 }
 
@@ -354,6 +356,8 @@ void drawCrossHair() {
 
 //draw splatters on wall
 void drawSplatters() {
+    int size=3;
+    
     GLfloat dummaterialDiffSplatter[4]={0.5, 0.2, 0.0, 1.0};
     GLfloat dummaterialSpecSplatter[4]={0.0, 0.0, 0.0, 1.0};
     GLfloat dummaterialAmbSplatter[4] = {1.0, 1.0, 1.0, 1.0};
@@ -374,13 +378,13 @@ void drawSplatters() {
         glBegin(GL_QUADS);
             glNormal3f(0.0,0.0,1.0);
             glTexCoord2f(floorText[0][0],floorText[0][1]);
-            glVertex3f(splatterVec[i].mX - 3, splatterVec[i].mY - 3, -34.9);
+            glVertex3f(splatterVec[i].mX - size, splatterVec[i].mY - size, -34.9);
             glTexCoord2f(floorText[1][0],floorText[1][1]);
-            glVertex3f(splatterVec[i].mX - 3, splatterVec[i].mY + 3, -34.9);
+            glVertex3f(splatterVec[i].mX - size, splatterVec[i].mY + size, -34.9);
             glTexCoord2f(floorText[2][0],floorText[2][1]);
-            glVertex3f(splatterVec[i].mX + 3, splatterVec[i].mY + 3, -34.9);
+            glVertex3f(splatterVec[i].mX + size, splatterVec[i].mY + size, -34.9);
             glTexCoord2f(floorText[3][0],floorText[3][1]);
-            glVertex3f(splatterVec[i].mX + 3, splatterVec[i].mY - 3, -34.9);
+            glVertex3f(splatterVec[i].mX + size, splatterVec[i].mY - size, -34.9);
         glEnd();
     }
 }
@@ -459,7 +463,12 @@ void drawPaintBalls(){
             if(paintBallVec[i].mY<=0){
                 continue;
             }else{
-                glutSolidSphere(1, 100, 100);
+                if(sizeToggle){
+                    glutSolidSphere(3, 100, 100);
+                }else{
+                    glutSolidSphere(1, 100, 100);
+                }
+                
             }
             
         glPopMatrix();
@@ -699,6 +708,12 @@ void handleKeyboard(unsigned char key, int _x, int _y) {
     if (key == 'x' || key == 'X'){
         axisToggle = !axisToggle;
     }
+
+    //toggle ball size
+    if (key == 'h' || key == 'H'){
+        sizeToggle = !sizeToggle;
+    }
+
     if (key == 'c' || key == 'C'){
         keyboardMouseToggle = !keyboardMouseToggle;
         if (keyboardMouseToggle == true) {
