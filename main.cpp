@@ -63,10 +63,10 @@ float shotsFired=0;
 //crosshair coordinates
 float crossHairPos[3] = {0, 10.5, 47};
 
-// One light for now
+//Second light only as placeholder
 float lightPos[2][4] = {
     { 0, 20, 0, 1 },
-    { -5, 20, 0, 1 }
+    { 0, 0, 0, 1 }
 };
 
 //camera position
@@ -488,7 +488,7 @@ void display(void) {
         createMenu();
     }
 
-    for (unsigned int j = 0; j < 2; j++) {
+    for (unsigned int j = 0; j < 1; j++) {
         glLightfv(GL_LIGHT0 +j, GL_POSITION, lightPos[j]);
         glLightfv(GL_LIGHT0 +j, GL_AMBIENT, amb);
         glLightfv(GL_LIGHT0 +j, GL_DIFFUSE, diff);
@@ -634,10 +634,10 @@ void init(void) {
     glColor3f(1, 1, 1);
     
     //enable Z buffer test, otherwise things appear in the order they're drawn
-    //enable lighting with 2 lights
+    //enable lighting with 1 light
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
-    glEnable(GL_LIGHT1);
+    
     
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
