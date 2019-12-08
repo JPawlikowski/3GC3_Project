@@ -61,7 +61,6 @@ bool reset = true;
 bool axisToggle = false;
 bool pauseToggle = true;
 //false = mouse, true = arrowKey
-//maybe change the default to mouse later****
 bool keyboardMouseToggle = true;
 
 //total shots fired
@@ -205,9 +204,6 @@ void floor(){
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, dummaterialShinyFloor);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecFloor);
 
-    //draw floor
-    //here
-    // glColor3fv(cols[1]);
     glBindTexture(GL_TEXTURE_2D, textures[0]);
 
     glBegin(GL_POLYGON);
@@ -218,7 +214,6 @@ void floor(){
         glVertex3f(floorCoord[i][0],floorCoord[i][1],floorCoord[i][2]);
     }
     glEnd();
-
 }
 
 //Draw the wall which will be shot at
@@ -235,8 +230,6 @@ void wall() {
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, dummaterialShinyWall);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecWall);
 
-    //here
-    // glColor3fv(cols[1]);
     glBindTexture(GL_TEXTURE_2D, textures[2]);
 
     glBegin(GL_QUADS);
@@ -267,10 +260,6 @@ void drawTable() {
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, dummaterialShinyTable);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecTable);
     glMaterialfv(GL_FRONT, GL_EMISSION, emitTable);
-
-    
-    // glColor3fv(cols[1]);
-    //glBindTexture(GL_TEXTURE_2D, textures[1]);
 
     glBegin(GL_POLYGON);
     glNormal3f(0,1.0,0);
@@ -416,8 +405,6 @@ void drawSplatters() {
         // }
 
         
-        
-
         glBegin(GL_QUADS);
             glNormal3f(0.0,0.0,1.0);
             glTexCoord2f(floorText[0][0],floorText[0][1]);
@@ -514,7 +501,6 @@ void drawPaintBalls(){
      }
 }
 
-
 //this function displays output to the window
 void display(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -537,7 +523,7 @@ void display(void) {
         createMenu();
     }
 
-    for (unsigned int j = 0; j < 1; j++) {
+    for (unsigned int j = 0; j < 2; j++) {
         glLightfv(GL_LIGHT0 +j, GL_POSITION, lightPos[j]);
         glLightfv(GL_LIGHT0 +j, GL_AMBIENT, amb);
         glLightfv(GL_LIGHT0 +j, GL_DIFFUSE, diff);
@@ -547,8 +533,6 @@ void display(void) {
     if (axisToggle == true){
         drawAxis();
     }
-
-    //textDisplay();
 
     floor();
 
@@ -570,7 +554,7 @@ void display(void) {
 }
 
 
-//here - code taken from textures.cpp example
+//code taken from textures.cpp example
 //taken from textures example
 GLubyte* LoadPPM(char* file, int* width, int* height, int* maxi)
 {
@@ -627,11 +611,8 @@ GLubyte* LoadPPM(char* file, int* width, int* height, int* maxi)
     return img;
 }
 
-//here
 //initialize textures
-void init(void)
-{
-    
+void init(void) {
     glMatrixMode(GL_TEXTURE);
     glScalef(1,-1,-1);
     
@@ -704,8 +685,6 @@ void init(void)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     
-    
-    
     glClearColor(0, 0, 0, 0);
     glColor3f(1, 1, 1);
     
@@ -713,12 +692,11 @@ void init(void)
     //enable lighting with 2 lights
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHT1);
     
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(45,1,1,100);
-    
-    
 }
 
 //keyboard input actions
@@ -805,12 +783,8 @@ void handleKeyboard(unsigned char key, int _x, int _y) {
             crossHairPos[0] = crossHairPos[0] + 0.2;
         }
     }
-    //motion front and back might not be worth it but can try
-    // if (key == 'w' || key == 'W'){
-    //     //move forward (set a limit for how far can go)
-    // }
-
 }
+
 void handleSpecialKeyboard(int key, int _x, int _y) {
     //crosshair position
     //Note: crosshair shouldnt move beyond field of view
@@ -843,7 +817,6 @@ void handleSpecialKeyboard(int key, int _x, int _y) {
 void OnMouseClick(int button, int state, int x, int y) {
     if (keyboardMouseToggle == false) {
         if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-        //if (button == GLUT_LEFT_BUTTON) {
             shootPaintBall();
         }
     }
@@ -901,28 +874,22 @@ int main(int argc, char** argv) {
     glutInitWindowPosition(50, 50);
     glutCreateWindow("Paintball Range");  //creates the window
     
-    
-    
-    //glEnable(GL_LIGHT1);
     glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
     glCullFace(GL_FRONT);
 
-    
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_NORMALIZE);
-    init(); //here
+    init();
 
     glutMouseFunc(OnMouseClick);
     glutKeyboardFunc(handleKeyboard);
     glutSpecialFunc(handleSpecialKeyboard);
-    //glutMouseFunc(OnMouseClick);
     glutPassiveMotionFunc(motion);
     glutDisplayFunc(display);
     // PlaySound("35 - Lost Woods.wav", NULL, SND_SYNC);
     
-    glutMainLoop();             //starts the event glutMainLoop
+    glutMainLoop();
 
     return 0;
 
