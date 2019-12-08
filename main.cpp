@@ -51,7 +51,7 @@ std::vector<Splatter> splatterVec(0);
 int cnt = 0;
 
 //toggles
-bool reset = true;
+bool reset = false;
 bool axisToggle = false;
 bool pauseToggle = true;
 bool sizeToggle = false;
@@ -484,10 +484,12 @@ void display(void) {
 
     //if initial run of program
     //print instructions and reset particles
-    if(reset == true){
+    if(reset){
         instructions();
         mouseControls();
         keyboardControls();
+        paintBallVec.clear();
+        splatterVec.clear();
         reset = false;
     }
 
@@ -661,6 +663,9 @@ void handleKeyboard(unsigned char key, int _x, int _y) {
     if (key == 'q' or key == 'Q') {
         exit(0);
     }
+    if (key == 'p' or key == 'P') {
+        reset = !reset;
+    }
     //set paintballs to red
     if (keyboardMouseToggle) {
         if (key == 'r' or key == 'R') {
@@ -749,7 +754,7 @@ void handleSpecialKeyboard(int key, int _x, int _y) {
     //crosshair position
     //Note: crosshair shouldnt move beyond field of view
     if (keyboardMouseToggle) {
-        cout << "cross hair pos : " << crossHairPos[0] << " " << crossHairPos[1] << endl;
+        //cout << "cross hair pos : " << crossHairPos[0] << " " << crossHairPos[1] << endl;
         if(key==GLUT_KEY_LEFT){
             if (crossHairPos[0] >= (eye[0] - 1)) {
                 crossHairPos[0] = crossHairPos[0] - 0.05;
