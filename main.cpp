@@ -2,6 +2,7 @@
 // Tyler Philips & Jakub Pawlikowski
 // 400017512 & 400011899
 // Final Project
+
 #include <math.h>
 #include <iostream>
 #include "Paintball.h"
@@ -370,7 +371,6 @@ void drawSplatters() {
         glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, dummaterialShinySplatter);
         glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dummaterialSpecSplatter);
 
-
         glColor3fv(cols[1]);
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindTexture(GL_TEXTURE_2D, textures[3]);       
@@ -468,9 +468,7 @@ void drawPaintBalls(){
                 }else{
                     glutSolidSphere(1, 100, 100);
                 }
-                
             }
-            
         glPopMatrix();
      }
 }
@@ -548,10 +546,9 @@ GLubyte* LoadPPM(char* file, int* width, int* height, int* maxi)
     fscanf(fd,"%[^\n] ",b);
     if(b[0]!='P'|| b[1] != '3')
     {
-        //printf("%s is not a PPM file!\n",file);
+        //exit if ppm file error
         exit(0);
     }
-    //printf("%s is a PPM file\n", file);
     fscanf(fd, "%c",&c);
     while(c == '#')
     {
@@ -561,16 +558,12 @@ GLubyte* LoadPPM(char* file, int* width, int* height, int* maxi)
     }
     ungetc(c,fd);
     fscanf(fd, "%d %d %d", &n, &m, &k);
-    
-    //printf("%d rows  %d columns  maxi value= %d\n",n,m,k);
-    
+        
     nm = n*m;
     
     img = (GLubyte*)malloc(3*sizeof(GLuint)*nm);
     
-    
     s=255.0/k;
-    
     
     for(i=0;i<nm;i++)
     {
@@ -601,13 +594,11 @@ void init(void) {
     glEnable(GL_TEXTURE_2D);
     
     glGenTextures(3, textures);
-     // grass texture
+    // grass texture
     glBindTexture(GL_TEXTURE_2D, textures[0]);
    
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width1, height1, 0, GL_RGB, GL_UNSIGNED_BYTE, grass_img);
     
-    // // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    // // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_CLAMP_TO_BORDER);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     //wood texture
@@ -640,7 +631,6 @@ void init(void) {
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-    
     glClearColor(0, 0, 0, 0);
     glColor3f(1, 1, 1);
     
@@ -648,7 +638,6 @@ void init(void) {
     //enable lighting with 1 light
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
-    
     
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -663,6 +652,7 @@ void handleKeyboard(unsigned char key, int _x, int _y) {
     if (key == 'q' or key == 'Q') {
         exit(0);
     }
+    //reset simulation
     if (key == 'p' or key == 'P') {
         reset = !reset;
     }
@@ -787,6 +777,7 @@ void OnMouseClick(int button, int state, int x, int y) {
     }
 }
 
+//passive mouse motion function
 void motion(int x, int y) {
     if (keyboardMouseToggle == false) { 
         //only move crosshair within visible region
@@ -834,10 +825,9 @@ void motion(int x, int y) {
 int main(int argc, char** argv) {
     glutInit(&argc, argv);     //starts up GLUT
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-    //create window
     glutInitWindowSize(500, 500);
     glutInitWindowPosition(50, 50);
-    glutCreateWindow("Paintball Range");  //creates the window
+    glutCreateWindow("Paintball Range");
     instructions();
     mouseControls();
     keyboardControls();
@@ -859,5 +849,4 @@ int main(int argc, char** argv) {
     glutMainLoop();
 
     return 0;
-
 }
